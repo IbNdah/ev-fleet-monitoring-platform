@@ -1,308 +1,276 @@
-# EV Fleet Monitoring Platform
+# 🚗 EV Fleet Monitoring Platform
 
-## Overview
+![Status](https://img.shields.io/badge/status-active-success)
+![Python](https://img.shields.io/badge/python-3.14-blue)
+![MQTT](https://img.shields.io/badge/MQTT-Mosquitto-green)
+![Azure](https://img.shields.io/badge/Azure-IoT-blue)
 
-EV Fleet Monitoring Platform is a cloud-native Azure IoT solution designed to monitor the health and operational status of electric vehicle battery systems at scale.
+## 📖 Overview
 
-The platform simulates a fleet of electric vehicles equipped with Battery ECUs that generate telemetry data. An Edge Gateway aggregates and normalizes telemetry before securely transmitting it to Azure IoT Hub using MQTT.
+EV Fleet Monitoring Platform is a cloud-native Azure IoT project that simulates a fleet of electric vehicles and their battery systems, generates realistic telemetry data, and transports telemetry through an MQTT-based architecture toward Azure cloud services.
 
-Telemetry is processed through an event-driven architecture using Azure Functions and stored in Azure Cosmos DB for analytics, monitoring, and future predictive maintenance scenarios.
+The project demonstrates real-world concepts in:
 
----
-
-## Business Scenario
-
-Fleet operators need real-time visibility into the health and performance of electric vehicle batteries.
-
-The platform continuously monitors:
-
-- State of Charge (SOC)
-- Battery Temperature
-- Cell Voltage
-- Current Consumption
-- Battery Health Indicators
-
-The solution enables:
-
-- Fleet-wide battery monitoring
-- Early anomaly detection
-- Historical telemetry analysis
-- Scalable cloud ingestion
-- Future predictive maintenance capabilities
+* ☁️ Cloud Architecture
+* 📡 IoT Communication
+* 🖥️ Edge Computing
+* 🔄 Event-Driven Systems
+* 🏗️ Infrastructure as Code
+* ⚡ Azure Serverless
 
 ---
 
-## High-Level Architecture
+# 🚀 Current Status
+
+| Component                 | Status |
+| ------------------------- | ------ |
+| Fleet Simulator           | ✅      |
+| Battery ECU Simulation    | ✅      |
+| Scenario Engine           | ✅      |
+| MQTT Publisher            | ✅      |
+| Mosquitto Integration     | ✅      |
+| End-to-End Telemetry Flow | ✅      |
+| Edge Gateway              | 🚧     |
+| Azure IoT Hub             | ⏳      |
+| Azure Functions           | ⏳      |
+| Cosmos DB                 | ⏳      |
+
+---
+
+# 🚀 Current Project Status
+
+## ✅ Implemented
+
+### 🚗 Fleet Simulation
+
+* Multiple simulated EVs
+* Fleet management engine
+* Vehicle lifecycle simulation
+* Scenario-driven behavior
+
+### 🔋 Battery ECU Simulation
+
+Each Battery ECU generates:
+
+* State of Charge (SOC)
+* Temperature
+* Voltage
+* Current
+* Fault conditions
+* UTC timestamps
+
+### 🎭 Scenario Engine
+
+Implemented scenarios:
+
+* Normal Driving
+* Fast Charging
+* Low Battery
+* Overheating
+
+### 📡 MQTT Integration
+
+Validated end-to-end:
+
+* Mosquitto MQTT Broker
+* MQTT Publisher
+* JSON Serialization
+* Continuous Telemetry Publishing
+* MQTT Subscriber Validation
+
+Successfully validated flow:
 
 ```text
-┌─────────────────┐
-│ EV Fleet        │
-│ (Simulated)     │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ Battery ECU     │
-│ Simulation      │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ Edge Gateway    │
-│ Python          │
-└────────┬────────┘
-         │ MQTT
-         ▼
-┌─────────────────┐
-│ Azure IoT Hub   │
-└────────┬────────┘
-         ▼
-┌─────────────────┐
-│ Azure Functions │
-└────────┬────────┘
-         ▼
-┌─────────────────┐
-│ Cosmos DB       │
-└─────────────────┘
-```
-
----
-
-## Solution Architecture
-
-```text
+Vehicle
+    ↓
+Battery ECU
+    ↓
 Fleet Simulator
-      │
-      ▼
-Battery ECUs
-      │
-      ▼
-Edge Gateway
-      │
-      ▼
-MQTT Messaging
-      │
-      ▼
-Azure IoT Hub
-      │
-      ▼
-Telemetry Processing Function
-      │
-      ▼
-Cosmos DB
-      │
-      ▼
-Analytics & Monitoring
+    ↓
+MQTT Publisher
+    ↓
+Mosquitto Broker
+    ↓
+MQTT Subscriber
 ```
 
 ---
 
-## Technology Stack
+# ✅ Current Architecture
 
-### Edge Layer
-
-- Python
-- MQTT
-
-### Cloud Platform
-
-- Azure IoT Hub
-- Azure Functions
-- Azure Cosmos DB
-
-### Infrastructure
-
-- Terraform
-
-### Monitoring
-
-- Azure Monitor
-- Application Insights
-- Log Analytics
-
-### CI/CD
-
-- GitHub Actions
+![Current Architecture](docs/screenshots/Current_Architecture.png)
 
 ---
 
-## Repository Structure
+# 🎯 Target Architecture
 
-```text
-ev-fleet-monitoring-platform/
-
-├── docs/
-├── fleet_simulator/
-├── edge_gateway/
-├── cloud/
-├── infrastructure/
-└── .github/
-```
+![Target Architecture](docs/screenshots/Target_Architecture.png)
 
 ---
 
-## Data Model Example
+# 📦 Example Telemetry
 
 ```json
 {
+  "deviceId": "BATT-EV-001",
+  "temperature": 31.4,
+  "current": -0.04,
+  "voltage": 3.67,
+  "soc": 79.77,
+  "state": "DRIVING",
+  "faultCode": null,
+  "timestamp": "2026-06-05T16:08:20.227267+00:00",
   "vehicleId": "EV-001",
-  "soc": 82,
-  "batteryTemperature": 36,
-  "cellVoltage": 3.72,
-  "current": 45,
-  "timestamp": "2026-06-04T12:00:00Z"
+  "vehicleState": "DRIVING"
 }
 ```
 
 ---
 
-## Data Flow
+# ▶️ Running the Simulator
 
-### 1. Telemetry Generation
+### Start MQTT Subscriber
 
-Battery ECUs simulate vehicle battery behavior and generate telemetry.
+```bash
+mosquitto_sub -h localhost -t evfleet/telemetry
+```
 
-### 2. Edge Processing
+### Run Fleet Simulator
 
-The Edge Gateway:
+```bash
+python -m fleet_simulator.main
+```
 
-- Collects telemetry
-- Validates payloads
-- Normalizes data
-- Publishes MQTT messages
-
-### 3. Cloud Ingestion
-
-Azure IoT Hub receives and authenticates incoming telemetry.
-
-### 4. Event Processing
-
-Azure Functions process telemetry events and apply business rules.
-
-### 5. Persistence
-
-Telemetry is stored in Azure Cosmos DB.
+Telemetry messages are continuously published through MQTT and can be observed in real time through the subscriber.
 
 ---
 
-## Design Decisions
+# 📂 Repository Structure
 
-### Why an Edge Gateway?
+```text
+ev-fleet-monitoring-platform/
 
-Legacy ECUs typically do not communicate directly with cloud platforms.
-
-The gateway provides:
-
-- Protocol translation
-- Data normalization
-- Validation
-- Future edge analytics capabilities
-
----
-
-### Why MQTT?
-
-MQTT is lightweight and optimized for constrained environments.
-
-Benefits:
-
-- Low bandwidth usage
-- Reliable message delivery
-- Widely adopted in IoT ecosystems
-
----
-
-### Why Azure IoT Hub?
-
-Azure IoT Hub provides:
-
-- Device identity management
-- Secure communication
-- Cloud-to-device messaging
-- Device provisioning capabilities
+├── .github/
+│   └── workflows/
+│
+├── fleet_simulator/
+│   ├── vehicles/
+│   ├── telemetry/
+│   └── tests/
+│
+├── edge_gateway/
+│   ├── mqtt_publisher.py
+│   ├── gateway.py
+│   ├── validator.py
+│   └── translator.py
+│
+├── cloud/
+│   ├── functions/
+│   └── shared/
+│
+├── infrastructure/
+│   ├── modules/
+│   └── environments/
+│
+└── docs/
+    ├── architecture/
+    ├── diagrams/
+    └── screenshots/
+```
 
 ---
 
-### Why Azure Functions?
+# 📸 Screenshots
 
-Telemetry processing is event-driven and highly scalable.
+## Fleet Simulator Output
 
-Azure Functions eliminate the need to manage infrastructure while providing automatic scaling.
+![Fleet Simulator](docs/screenshots/fleet-simulator.png)
 
----
+## MQTT Telemetry Stream
 
-### Why Cosmos DB?
-
-Telemetry data is naturally document-oriented and schema-flexible.
-
-Cosmos DB offers:
-
-- Global scalability
-- Low latency
-- Flexible JSON storage
-- Efficient partitioning strategies
+![MQTT Stream](docs/screenshots/mqtt-stream.png)
 
 ---
 
-## Security Principles
+# 🏆 Key Achievements
 
-The solution follows cloud security best practices:
-
-- Managed Identity
-- Azure RBAC
-- Key Vault integration
-- Principle of Least Privilege
-- No secrets stored in source code
-
----
-
-## Infrastructure as Code
-
-Infrastructure is provisioned using Terraform.
-
-Planned Azure resources:
-
-- Resource Group
-- Azure IoT Hub
-- Cosmos DB
-- Function App
-- Key Vault
-- Log Analytics Workspace
-- Application Insights
+* Simulated a fleet of electric vehicles with independent battery systems
+* Implemented Battery ECU telemetry generation
+* Developed scenario-based simulation behavior
+* Implemented MQTT-based telemetry publishing
+* Validated end-to-end telemetry flow using Mosquitto
+* Built a modular architecture ready for Azure integration
+* Created a testable and extensible IoT simulation platform
 
 ---
 
-## Future Enhancements
+# 🛣️ Roadmap
 
-Planned future capabilities:
+## Phase 1 — Simulation & MQTT ✅
 
-- Service Bus integration
-- Real-time alerting
-- Grafana dashboards
-- Device Twins
-- Digital Twin integration
-- Predictive maintenance models
-- Fleet-wide analytics
+* Fleet Simulator
+* Battery ECU Simulation
+* Scenario Engine
+* MQTT Publisher
+* Mosquitto Integration
+* End-to-End Telemetry Validation
+
+## Phase 2 — Edge Processing 🚧
+
+* MQTT Subscriber Gateway
+* Telemetry Validator
+* Telemetry Translator
+* Routing Logic
+* Data Normalization
+
+## Phase 3 — Azure Integration ⏳
+
+* Azure IoT Hub
+* Azure Functions
+* Cosmos DB
+* Application Insights
+* Azure Monitor
+
+## Phase 4 — Infrastructure as Code ⏳
+
+* Terraform Modules
+* Environment Separation
+* Automated Provisioning
+* CI/CD Deployment Pipelines
+
+## Phase 5 — Production Features ⏳
+
+* Device Twins
+* Real-Time Alerting
+* Grafana Dashboards
+* Fleet Analytics
+* Predictive Maintenance Models
 
 ---
 
-## Lessons Learned
+# 🧠 Lessons Learned
 
-This project focuses on understanding:
+This project focuses on gaining hands-on experience with:
 
-- Azure IoT Architecture
-- Event-Driven Design
-- Edge Computing
-- Cloud-Native Patterns
-- Infrastructure as Code
-- Scalable Telemetry Processing
+* Python Object-Oriented Design
+* MQTT Messaging Patterns
+* IoT Architecture Design
+* Edge Computing Concepts
+* Event-Driven Systems
+* Azure Cloud Services
+* Infrastructure as Code
+* Scalable Telemetry Processing
 
 ---
 
-## Author
+# 👨‍💻 Author
 
-Ibrahim Ndah
+**Ibrahim Ndah**
 
-- Microsoft Certified: Azure Administrator Associate (AZ-104)
-- Cloud Engineering & Azure Architecture
-- Automotive Systems Engineering Background
+🎓 Microsoft Certified: Azure Administrator Associate (AZ-104)
+
+☁️ Azure Solutions Architecture Learning Path
+
+🚗 Automotive Systems Engineering Background
+
+⚡ Cloud, IoT & Platform Engineering
