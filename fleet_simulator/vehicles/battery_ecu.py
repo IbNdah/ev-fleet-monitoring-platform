@@ -1,5 +1,5 @@
 import random
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 class BatteryECU:
@@ -55,12 +55,13 @@ class BatteryECU:
             "soc": round(self.soc, 2),
             "state": self.state,
             "faultCode": self.fault_code,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(UTC).isoformat()
         }
 
 
 # Quick test
-battery = BatteryECU("EV-001")
+if __name__ == "__main__":
+    battery = BatteryECU("EV-001")
 
-for _ in range(10):
-    print(battery.update())
+    for _ in range(10):
+        print(battery.update())
