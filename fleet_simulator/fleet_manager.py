@@ -1,4 +1,5 @@
 from fleet_simulator.vehicles.vehicle import Vehicle
+from fleet_simulator.telemetry.telemetry_generator import (TelemetryGenerator)
 
 
 class FleetSimulator:
@@ -20,6 +21,8 @@ class FleetSimulator:
         telemetry_data = []
 
         for vehicle in self.vehicles:
+            TelemetryGenerator.apply_scenario(vehicle)
+            
             telemetry_data.append(
                 vehicle.simulate_cycle()
             )

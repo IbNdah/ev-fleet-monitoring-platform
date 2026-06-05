@@ -1,5 +1,5 @@
-from datetime import datetime, UTC
 from fleet_simulator.vehicles.battery_ecu import BatteryECU
+from fleet_simulator.telemetry.scenarios import Scenario
 
 
 class Vehicle:
@@ -9,6 +9,7 @@ class Vehicle:
         self.vehicle_id = vehicle_id                          # Unique identifier for the vehicle
         self.battery_ecu = BatteryECU(f"BATT-{vehicle_id}")   # Initialize the battery ECU with a unique device ID
         self.state = "PARKED"                                 # Current state of the vehicle
+        self.scenario = Scenario.NORMAL_DRIVING               # Current simulation scenario
 
 
     def change_state(self, new_state):
@@ -23,7 +24,13 @@ class Vehicle:
             raise ValueError(f"Invalid state: {new_state}. Valid states are: {valid_states}")
         
         
+    def set_scenario(self, scenario):    
+        """Set the current simulation scenario for the vehicle."""
+        if not isinstance(scenario, Scenario):
+            raise ValueError(f"Invalid scenario: {scenario}. Must be an instance of Scenario enum.")
+        self.scenario = scenario
         
+                      
     def simulate_cycle(self):
         
         """Simulate one telemetry cycle and return the battery ECU data."""
@@ -34,7 +41,8 @@ class Vehicle:
         telemetry["vehicleState"] = self.state
                
         return telemetry
-     
+    
+
 # Quick test
 if __name__ == "__main__":
     vehicle = Vehicle("EV-001")
