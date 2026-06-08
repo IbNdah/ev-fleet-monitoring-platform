@@ -28,14 +28,13 @@ from fleet_simulator.vehicles.vehicle import Vehicle
 from edge_gateway.mqtt_publisher import MQTTPublisher
 
 
-TOPIC = "evfleet/telemetry"                         # MQTT topic used for telemetry messages
+TOPIC = "evfleet/telemetry/raw"                     # MQTT topic(raw) used for telemetry messages
 SIMULATION_INTERVAL = 5                             # Delay between simulation cycles (seconds)
 
 
 def main():
     """
     Start the EV fleet simulation.
-
     Creates simulated vehicles, publishes telemetry
     to MQTT, and continuously runs simulation cycles.
     """
@@ -49,8 +48,8 @@ def main():
     publisher = MQTTPublisher()                     # Create MQTT publisher
     publisher.connect()                             # Connect to MQTT broker
 
-    print("Fleet simulator started...🚀🚀")
-    print(f"Publishing telemetry to topic: {TOPIC}")
+    print("🚀...Fleet simulator started...🚀")
+    print(f"📡...Publishing telemetry to topic...📡: {TOPIC}")
 
     try:
 
@@ -61,18 +60,20 @@ def main():
             for telemetry in telemetry_batch:              # Publish telemetry of each vehicle
 
                 publisher.publish(TOPIC,telemetry)
-                print(f"Published telemetry: {telemetry}")
-            
-            print("*** 🚀🚀 New publishing in 5s 📦📦 ***")
+                print(f"📡...Published telemetry: {telemetry}")
+                            
+            print("⏱️... New publishing in 5s ...📦")
+
             sleep(SIMULATION_INTERVAL)                     # Wait until next simulation cycle
              
 
     except KeyboardInterrupt:
-        print("\n 👉 ... Stopping fleet simulator...")
+        print("\n... Stopping fleet simulator.⚠️")
 
     finally:
         publisher.disconnect()
-        print(" 👉 ... MQTT connection closed! ✅")
+        print("... MQTT connection closed!  ✅")
+        print("                                   ")
 
 
 if __name__ == "__main__":
