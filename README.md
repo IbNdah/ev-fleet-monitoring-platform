@@ -4,6 +4,9 @@
 ![Python](https://img.shields.io/badge/python-3.14-blue)
 ![MQTT](https://img.shields.io/badge/MQTT-Mosquitto-green)
 ![Azure](https://img.shields.io/badge/Azure-IoT-blue)
+![Tests](https://img.shields.io/badge/tests-16%20passing-success)
+
+---
 
 ## 📖 Overview
 
@@ -17,6 +20,7 @@ The project demonstrates real-world concepts in:
 * 🔄 Event-Driven Systems
 * 🏗️ Infrastructure as Code
 * ⚡ Azure Serverless
+* 🧪 Automated Testing
 
 ---
 
@@ -28,27 +32,57 @@ The project demonstrates real-world concepts in:
 | Battery ECU Simulation    | ✅      |
 | Scenario Engine           | ✅      |
 | MQTT Publisher            | ✅      |
-| Mosquitto Integration     | ✅      |
+| MQTT Subscriber           | ✅      |
+| Telemetry Validator       | ✅      |
+| Telemetry Translator      | ✅      |
+| Edge Gateway              | ✅      |
 | End-to-End Telemetry Flow | ✅      |
-| Edge Gateway              | 🚧     |
+| Automated Tests           | ✅      |
 | Azure IoT Hub             | ⏳      |
 | Azure Functions           | ⏳      |
 | Cosmos DB                 | ⏳      |
 
 ---
 
-# 🚀 Current Project Status
+# 🏗️ Current Solution Flow
 
-## ✅ Implemented
+```text
+Vehicle
+    │
+    ▼
+Battery ECU
+    │
+    ▼
+Fleet Simulator
+    │
+    ▼
+MQTT Publisher
+    │
+    ▼
+MQTT Broker (Mosquitto)
+    │
+    ▼
+Edge Gateway
+    │
+    ├── Validator
+    ├── Translator
+    │
+    ▼
+Processed MQTT Topic
+```
 
-### 🚗 Fleet Simulation
+---
+
+# 🚀 Implemented Features
+
+## 🚗 Fleet Simulation
 
 * Multiple simulated EVs
 * Fleet management engine
 * Vehicle lifecycle simulation
 * Scenario-driven behavior
 
-### 🔋 Battery ECU Simulation
+## 🔋 Battery ECU Simulation
 
 Each Battery ECU generates:
 
@@ -59,7 +93,7 @@ Each Battery ECU generates:
 * Fault conditions
 * UTC timestamps
 
-### 🎭 Scenario Engine
+## 🎭 Scenario Engine
 
 Implemented scenarios:
 
@@ -68,30 +102,34 @@ Implemented scenarios:
 * Low Battery
 * Overheating
 
-### 📡 MQTT Integration
+## 📡 MQTT Integration
 
 Validated end-to-end:
 
 * Mosquitto MQTT Broker
 * MQTT Publisher
+* MQTT Subscriber
 * JSON Serialization
 * Continuous Telemetry Publishing
-* MQTT Subscriber Validation
 
-Successfully validated flow:
+## 🌐 Edge Gateway
+
+Implemented:
+
+* MQTT Subscriber
+* Telemetry Validation
+* Telemetry Translation
+* Raw Topic Processing
+* Processed Topic Publishing
+* Rejected Topic Routing
+* Structured Logging
+
+Topics:
 
 ```text
-Vehicle
-    ↓
-Battery ECU
-    ↓
-Fleet Simulator
-    ↓
-MQTT Publisher
-    ↓
-Mosquitto Broker
-    ↓
-MQTT Subscriber
+evfleet/telemetry/raw
+evfleet/telemetry/processed
+evfleet/telemetry/rejected
 ```
 
 ---
@@ -110,6 +148,8 @@ MQTT Subscriber
 
 # 📦 Example Telemetry
 
+## Raw Telemetry
+
 ```json
 {
   "deviceId": "BATT-EV-001",
@@ -125,23 +165,80 @@ MQTT Subscriber
 }
 ```
 
----
+## Processed Telemetry
 
-# ▶️ Running the Simulator
-
-### Start MQTT Subscriber
-
-```bash
-mosquitto_sub -h localhost -t evfleet/telemetry
+```json
+{
+  "schemaVersion": "1.0",
+  "vehicleId": "EV-001",
+  "deviceId": "BATT-EV-001",
+  "vehicleState": "DRIVING",
+  "batteryState": "DRIVING",
+  "batterySoc": 79.77,
+  "batteryTemperature": 31.4,
+  "batteryVoltage": 3.67,
+  "batteryCurrent": -0.04,
+  "faultCode": null,
+  "telemetryTimestamp": "2026-06-05T16:08:20.227267+00:00",
+  "processedTimestamp": "2026-06-08T11:00:00+00:00"
+}
 ```
 
-### Run Fleet Simulator
+---
+
+# 🧪 Testing
+
+Current automated test coverage includes:
+
+## Fleet Simulator
+
+* Vehicle creation
+* Fleet creation
+* Fleet simulation
+* State changes
+* Scenario handling
+* Battery ECU behavior
+
+## Edge Gateway
+
+* Telemetry validation
+* Telemetry translation
+* Gateway processing pipeline
+* Invalid telemetry handling
+
+Current status:
+
+```text
+16 passed in 0.36s
+```
+
+Run all tests:
+
+```bash
+pytest
+```
+
+---
+
+# ▶️ Running the Platform
+
+## Start MQTT Subscriber
+
+```bash
+mosquitto_sub -h localhost -t evfleet/telemetry/processed
+```
+
+## Start Edge Gateway
+
+```bash
+python -m edge_gateway.gateway
+```
+
+## Start Fleet Simulator
 
 ```bash
 python -m fleet_simulator.main
 ```
-
-Telemetry messages are continuously published through MQTT and can be observed in real time through the subscriber.
 
 ---
 
@@ -159,10 +256,12 @@ ev-fleet-monitoring-platform/
 │   └── tests/
 │
 ├── edge_gateway/
-│   ├── mqtt_publisher.py
 │   ├── gateway.py
+│   ├── mqtt_publisher.py
+│   ├── mqtt_subscriber.py
 │   ├── validator.py
-│   └── translator.py
+│   ├── translator.py
+│   └── tests/
 │
 ├── cloud/
 │   ├── functions/
@@ -180,27 +279,17 @@ ev-fleet-monitoring-platform/
 
 ---
 
-# 📸 Screenshots
-
-## Fleet Simulator Output
-
-![Fleet Simulator](docs/screenshots/fleet-simulator.png)
-
-## MQTT Telemetry Stream
-
-![MQTT Stream](docs/screenshots/mqtt-stream.png)
-
----
-
 # 🏆 Key Achievements
 
 * Simulated a fleet of electric vehicles with independent battery systems
 * Implemented Battery ECU telemetry generation
 * Developed scenario-based simulation behavior
 * Implemented MQTT-based telemetry publishing
-* Validated end-to-end telemetry flow using Mosquitto
-* Built a modular architecture ready for Azure integration
-* Created a testable and extensible IoT simulation platform
+* Built a complete Edge Gateway processing pipeline
+* Implemented telemetry validation and normalization
+* Implemented automated unit testing with pytest
+* Achieved full test pass rate across simulator and edge gateway components
+* Created a modular architecture ready for Azure integration
 
 ---
 
@@ -212,18 +301,25 @@ ev-fleet-monitoring-platform/
 * Battery ECU Simulation
 * Scenario Engine
 * MQTT Publisher
-* Mosquitto Integration
-* End-to-End Telemetry Validation
+* MQTT Integration
+* End-to-End Validation
 
-## Phase 2 — Edge Processing 🚧
+## Phase 2 — Edge Processing ✅
 
-* MQTT Subscriber Gateway
+* MQTT Subscriber
 * Telemetry Validator
 * Telemetry Translator
-* Routing Logic
-* Data Normalization
+* Gateway Processing Pipeline
+* Raw / Processed / Rejected Topics
+* Automated Tests
 
-## Phase 3 — Azure Integration ⏳
+## Phase 3 — Configuration Management ⏳
+
+* Centralized Config Module
+* MQTT Configuration Management
+* Environment-Based Configuration
+
+## Phase 4 — Azure Integration ⏳
 
 * Azure IoT Hub
 * Azure Functions
@@ -231,26 +327,85 @@ ev-fleet-monitoring-platform/
 * Application Insights
 * Azure Monitor
 
-## Phase 4 — Infrastructure as Code ⏳
+## Phase 5 — Infrastructure as Code ⏳
 
 * Terraform Modules
 * Environment Separation
 * Automated Provisioning
 * CI/CD Deployment Pipelines
 
-## Phase 5 — Production Features ⏳
+## Phase 6 — Production Features ⏳
 
 * Device Twins
 * Real-Time Alerting
 * Grafana Dashboards
 * Fleet Analytics
-* Predictive Maintenance Models
+* Predictive Maintenance
+
+---
+
+# 🔧 Technical Improvements Backlog
+
+## Edge Gateway
+
+### Dependency Injection
+
+Current implementation creates MQTT dependencies directly inside the gateway.
+
+Benefits of future improvement:
+
+* Improved testability
+* Easier mocking
+* Reduced coupling
+* Better maintainability
+
+---
+
+## Battery ECU Realism
+
+Planned improvements:
+
+* Realistic EV battery pack voltages (350V–800V)
+* State-dependent current consumption
+* More realistic charging curves
+* Battery degradation simulation
+* Battery health indicators (SOH)
+
+---
+
+## Configuration Centralization
+
+Future configuration items:
+
+* MQTT host
+* MQTT port
+* Raw topic
+* Processed topic
+* Rejected topic
+
+Benefits:
+
+* Easier maintenance
+* Environment-specific configurations
+* Better scalability
+
+---
+
+## Observability
+
+Planned monitoring improvements:
+
+* Structured logging
+* Log aggregation
+* Azure Application Insights integration
+* Telemetry tracing
+* Gateway metrics
 
 ---
 
 # 🧠 Lessons Learned
 
-This project focuses on gaining hands-on experience with:
+This project provides hands-on experience with:
 
 * Python Object-Oriented Design
 * MQTT Messaging Patterns
@@ -260,6 +415,7 @@ This project focuses on gaining hands-on experience with:
 * Azure Cloud Services
 * Infrastructure as Code
 * Scalable Telemetry Processing
+* Software Testing and Validation
 
 ---
 
@@ -269,7 +425,9 @@ This project focuses on gaining hands-on experience with:
 
 🎓 Microsoft Certified: Azure Administrator Associate (AZ-104)
 
-☁️ Azure Solutions Architecture Learning Path
+🎓 Microsoft Certified: Azure Solutions Architect Expert (AZ-305)
+
+☁️ Cloud Engineering & Azure Architecture
 
 🚗 Automotive Systems Engineering Background
 
