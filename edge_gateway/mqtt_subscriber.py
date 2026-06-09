@@ -1,6 +1,12 @@
 import json
 import paho.mqtt.client as mqtt
 
+from shared.config import (
+    MQTT_BROKER,
+    MQTT_PORT,
+    MQTT_KEEPALIVE
+)
+
 
 class MQTTSubscriber:
     """
@@ -11,9 +17,7 @@ class MQTTSubscriber:
 
     def __init__(
         self,
-        message_handler,
-        broker_host="localhost",
-        broker_port=1883
+        message_handler
     ):
 
         self.message_handler = (
@@ -23,9 +27,6 @@ class MQTTSubscriber:
         self.client = mqtt.Client(
             mqtt.CallbackAPIVersion.VERSION2
         )
-
-        self.broker_host = broker_host
-        self.broker_port = broker_port
 
     def on_message(
         self,
@@ -52,8 +53,9 @@ class MQTTSubscriber:
         )
 
         self.client.connect(
-            self.broker_host,
-            self.broker_port
+            MQTT_BROKER,
+            MQTT_PORT,
+            MQTT_KEEPALIVE
         )
 
         self.client.subscribe(

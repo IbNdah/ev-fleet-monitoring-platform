@@ -4,15 +4,11 @@ from edge_gateway.validator import TelemetryValidator
 from edge_gateway.translator import TelemetryTranslator
 from edge_gateway.mqtt_publisher import MQTTPublisher
 from edge_gateway.mqtt_subscriber import MQTTSubscriber
-
-
-RAW_TOPIC = "evfleet/telemetry/raw"
-PROCESSED_TOPIC = "evfleet/telemetry/processed"
-REJECTED_TOPIC = "evfleet/telemetry/rejected"
+from shared.config import (RAW_TOPIC, PROCESSED_TOPIC, REJECTED_TOPIC, LOG_LEVEL)
 
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=LOG_LEVEL,
     format="%(asctime)s [%(levelname)s] %(message)s"
 )
 
@@ -99,7 +95,5 @@ class EdgeGateway:
 
 
 if __name__ == "__main__":
-
     gateway = EdgeGateway()
-
     gateway.start()
