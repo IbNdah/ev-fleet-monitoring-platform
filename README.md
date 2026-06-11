@@ -3,24 +3,25 @@
 ![Status](https://img.shields.io/badge/status-active-success)
 ![Python](https://img.shields.io/badge/python-3.14-blue)
 ![MQTT](https://img.shields.io/badge/MQTT-Mosquitto-green)
-![Azure](https://img.shields.io/badge/Azure-IoT-blue)
-![Tests](https://img.shields.io/badge/tests-16%20passing-success)
+![Azure](https://img.shields.io/badge/Azure-IoT%20Hub-blue)
+![Tests](https://img.shields.io/badge/tests-passing-success)
 
 ---
 
-## 📖 Overview
+# 📖 Overview
 
-EV Fleet Monitoring Platform is a cloud-native Azure IoT project that simulates a fleet of electric vehicles and their battery systems, generates realistic telemetry data, and transports telemetry through an MQTT-based architecture toward Azure cloud services.
+EV Fleet Monitoring Platform is a cloud-native Azure IoT project that simulates a fleet of electric vehicles and battery systems, processes telemetry at the edge, and transports telemetry to Azure cloud services.
 
-The project demonstrates real-world concepts in:
+The project demonstrates real-world concepts used in modern IoT and cloud platforms:
 
 * ☁️ Cloud Architecture
 * 📡 IoT Communication
 * 🖥️ Edge Computing
 * 🔄 Event-Driven Systems
-* 🏗️ Infrastructure as Code
-* ⚡ Azure Serverless
+* 🏗️ Infrastructure as Code (Terraform)
+* 🔐 Configuration & Secret Management
 * 🧪 Automated Testing
+* ⚡ Azure IoT Services
 
 ---
 
@@ -36,15 +37,18 @@ The project demonstrates real-world concepts in:
 | Telemetry Validator       | ✅      |
 | Telemetry Translator      | ✅      |
 | Edge Gateway              | ✅      |
+| Configuration Management  | ✅      |
+| Cloud Connector           | ✅      |
+| Azure IoT Hub             | ✅      |
 | End-to-End Telemetry Flow | ✅      |
 | Automated Tests           | ✅      |
-| Azure IoT Hub             | ⏳      |
 | Azure Functions           | ⏳      |
 | Cosmos DB                 | ⏳      |
+| Monitoring & Alerting     | ⏳      |
 
 ---
 
-# 🏗️ Current Solution Flow
+# 🏗️ Current Solution Architecture
 
 ```text
 Vehicle
@@ -56,19 +60,54 @@ Battery ECU
 Fleet Simulator
     │
     ▼
-MQTT Publisher
-    │
-    ▼
-MQTT Broker (Mosquitto)
+MQTT Raw Topic
+(evfleet/telemetry/raw)
     │
     ▼
 Edge Gateway
     │
-    ├── Validator
-    ├── Translator
+    ├── Validation
+    ├── Translation
+    └── Routing
     │
     ▼
-Processed MQTT Topic
+MQTT Processed Topic
+(evfleet/telemetry/processed)
+    │
+    ▼
+Cloud Connector
+    │
+    ▼
+Azure IoT Hub
+```
+
+---
+
+# 🌐 Azure Integration
+
+Implemented Azure Components:
+
+* Azure IoT Hub
+* Device Identity Registration
+* MQTT over TLS Communication
+* Cloud Connector
+* End-to-End Telemetry Ingestion
+* Terraform-based Azure Provisioning
+* Environment-Based Configuration (.env)
+
+Validated Flow:
+
+```text
+Fleet Simulator
+      │
+      ▼
+Edge Gateway
+      │
+      ▼
+Cloud Connector
+      │
+      ▼
+Azure IoT Hub
 ```
 
 ---
@@ -131,6 +170,16 @@ evfleet/telemetry/raw
 evfleet/telemetry/processed
 evfleet/telemetry/rejected
 ```
+
+## ☁️ Cloud Connector
+
+Implemented:
+
+* MQTT Subscription to Processed Topic
+* Azure IoT Hub Connection
+* Telemetry Forwarding
+* Device Authentication
+* Secure Cloud Communication
 
 ---
 
@@ -206,11 +255,12 @@ Current automated test coverage includes:
 * Gateway processing pipeline
 * Invalid telemetry handling
 
-Current status:
+## Cloud Integration
 
-```text
-16 passed in 0.36s
-```
+* Azure IoT Hub connectivity
+* Device authentication
+* Telemetry forwarding
+* End-to-End validation
 
 Run all tests:
 
@@ -222,10 +272,16 @@ pytest
 
 # ▶️ Running the Platform
 
-## Start MQTT Subscriber
+## Start MQTT Broker
 
 ```bash
-mosquitto_sub -h localhost -t evfleet/telemetry/processed
+mosquitto
+```
+
+## Start Cloud Connector
+
+```bash
+python -m cloud.main
 ```
 
 ## Start Edge Gateway
@@ -238,6 +294,24 @@ python -m edge_gateway.gateway
 
 ```bash
 python -m fleet_simulator.main
+```
+
+---
+
+# 🔐 Configuration
+
+Sensitive configuration is stored outside the source code using environment variables.
+
+Example:
+
+```env
+IOT_HUB_CONNECTION_STRING=your_connection_string
+```
+
+Environment variables are loaded automatically using:
+
+```python
+load_dotenv()
 ```
 
 ---
@@ -265,31 +339,36 @@ ev-fleet-monitoring-platform/
 │
 ├── cloud/
 │   ├── functions/
-│   └── shared/
+│   ├── iot_hub_connector.py
+│   └── main.py
 │
 ├── infrastructure/
 │   ├── modules/
 │   └── environments/
 │
+├── config/
+│
+├── shared/
+│
 └── docs/
-    ├── architecture/
-    ├── diagrams/
-    └── screenshots/
 ```
 
 ---
 
-# 🏆 Key Achievements
+# 🏆 Skills Demonstrated
 
-* Simulated a fleet of electric vehicles with independent battery systems
-* Implemented Battery ECU telemetry generation
-* Developed scenario-based simulation behavior
-* Implemented MQTT-based telemetry publishing
-* Built a complete Edge Gateway processing pipeline
-* Implemented telemetry validation and normalization
-* Implemented automated unit testing with pytest
-* Achieved full test pass rate across simulator and edge gateway components
-* Created a modular architecture ready for Azure integration
+* Python Development
+* MQTT Messaging
+* Azure IoT Hub
+* Edge Computing
+* Event-Driven Architecture
+* Infrastructure as Code (Terraform)
+* Cloud Integration
+* Telemetry Processing
+* Configuration Management
+* Dependency Injection
+* Automated Testing
+* GitHub Actions CI/CD
 
 ---
 
@@ -302,7 +381,6 @@ ev-fleet-monitoring-platform/
 * Scenario Engine
 * MQTT Publisher
 * MQTT Integration
-* End-to-End Validation
 
 ## Phase 2 — Edge Processing ✅
 
@@ -311,95 +389,45 @@ ev-fleet-monitoring-platform/
 * Telemetry Translator
 * Gateway Processing Pipeline
 * Raw / Processed / Rejected Topics
-* Automated Tests
 
-## Phase 3 — Configuration Management ⏳
+## Phase 3 — Configuration Management ✅
 
-* Centralized Config Module
-* MQTT Configuration Management
+* Centralized Configuration
 * Environment-Based Configuration
+* Secret Management
 
-## Phase 4 — Azure Integration ⏳
+## Phase 4 — Azure IoT Hub Integration ✅
 
 * Azure IoT Hub
-* Azure Functions
-* Cosmos DB
+* Device Identity
+* Cloud Connector
+* End-to-End Validation
+
+## Phase 5 — Azure Functions ⏳
+
+* IoT Hub Trigger
+* Telemetry Processing
+* Event Handling
+
+## Phase 6 — Cosmos DB ⏳
+
+* Telemetry Persistence
+* Data Modeling
+* Query Layer
+
+## Phase 7 — Monitoring & Observability ⏳
+
 * Application Insights
 * Azure Monitor
+* Metrics
+* Alerting
 
-## Phase 5 — Infrastructure as Code ⏳
-
-* Terraform Modules
-* Environment Separation
-* Automated Provisioning
-* CI/CD Deployment Pipelines
-
-## Phase 6 — Production Features ⏳
+## Phase 8 — Advanced IoT Features ⏳
 
 * Device Twins
-* Real-Time Alerting
-* Grafana Dashboards
 * Fleet Analytics
 * Predictive Maintenance
-
----
-
-# 🔧 Technical Improvements Backlog
-
-## Edge Gateway
-
-### Dependency Injection
-
-Current implementation creates MQTT dependencies directly inside the gateway.
-
-Benefits of future improvement:
-
-* Improved testability
-* Easier mocking
-* Reduced coupling
-* Better maintainability
-
----
-
-## Battery ECU Realism
-
-Planned improvements:
-
-* Realistic EV battery pack voltages (350V–800V)
-* State-dependent current consumption
-* More realistic charging curves
-* Battery degradation simulation
-* Battery health indicators (SOH)
-
----
-
-## Configuration Centralization
-
-Future configuration items:
-
-* MQTT host
-* MQTT port
-* Raw topic
-* Processed topic
-* Rejected topic
-
-Benefits:
-
-* Easier maintenance
-* Environment-specific configurations
-* Better scalability
-
----
-
-## Observability
-
-Planned monitoring improvements:
-
-* Structured logging
-* Log aggregation
-* Azure Application Insights integration
-* Telemetry tracing
-* Gateway metrics
+* Real-Time Dashboards
 
 ---
 
@@ -414,6 +442,7 @@ This project provides hands-on experience with:
 * Event-Driven Systems
 * Azure Cloud Services
 * Infrastructure as Code
+* Secure Configuration Management
 * Scalable Telemetry Processing
 * Software Testing and Validation
 
@@ -423,12 +452,8 @@ This project provides hands-on experience with:
 
 **Ibrahim Ndah**
 
-🎓 Microsoft Certified: Azure Administrator Associate (AZ-104)
-
 🎓 Microsoft Certified: Azure Solutions Architect Expert (AZ-305)
-
-☁️ Cloud Engineering & Azure Architecture
-
+🎓 Microsoft Certified: Azure Administrator Associate (AZ-104)
+☁️ Azure Cloud Engineering & Solution Architecture
 🚗 Automotive Systems Engineering Background
-
 ⚡ Cloud, IoT & Platform Engineering
