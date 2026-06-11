@@ -13,9 +13,7 @@ class MQTTPublisher:
 
     def __init__(self):
 
-        self.client = mqtt.Client(
-            mqtt.CallbackAPIVersion.VERSION2
-        )
+        self.client = mqtt.Client()
 
     def connect(self):
         """Connect to the MQTT broker."""

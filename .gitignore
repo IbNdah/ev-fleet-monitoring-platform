@@ -9,6 +9,7 @@ tempCodeRunnerFile.py
 # Virtual Environments
 venv/
 .venv/
+.env
 
 # VS Code
 .vscode/

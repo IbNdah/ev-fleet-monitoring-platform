@@ -3,6 +3,9 @@ Shared configuration for EV Fleet Monitoring Platform.
 """
 
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ==========================================
 # MQTT
@@ -46,11 +49,22 @@ REJECTED_TOPIC = os.getenv(
     "evfleet/telemetry/rejected"
 )
 
-# ==========================================
-# Logging
-# ==========================================
+
 
 LOG_LEVEL = os.getenv(
     "LOG_LEVEL",
     "INFO"
+)
+
+
+# ==========================================
+# AZURE IOT HUB
+# ==========================================
+
+IOT_HUB_CONNECTION_STRING = os.getenv(
+    "IOT_HUB_CONNECTION_STRING")
+
+DEVICE_ID = os.getenv(
+    "DEVICE_ID",
+    "ev-fleet-gateway"
 )

@@ -1,0 +1,4 @@
+pytest
+paho-mqtt==1.6.1
+azure-iot-device==2.14.0
+python-dotenv==1.1.1

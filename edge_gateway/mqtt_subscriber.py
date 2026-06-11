@@ -24,9 +24,7 @@ class MQTTSubscriber:
             message_handler
         )
 
-        self.client = mqtt.Client(
-            mqtt.CallbackAPIVersion.VERSION2
-        )
+        self.client = mqtt.Client()
 
     def on_message(
         self,
