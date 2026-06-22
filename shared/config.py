@@ -50,7 +50,6 @@ REJECTED_TOPIC = os.getenv(
 )
 
 
-
 LOG_LEVEL = os.getenv(
     "LOG_LEVEL",
     "INFO"

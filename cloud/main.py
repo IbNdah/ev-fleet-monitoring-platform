@@ -1,5 +1,4 @@
 import logging
-
 import paho.mqtt.client as mqtt
 
 from shared.config import (
@@ -9,9 +8,7 @@ from shared.config import (
     IOT_HUB_CONNECTION_STRING
 )
 
-from cloud.iot_hub_connector import (
-    IoTHubConnector
-)
+from cloud.iot_hub_connector import (IoTHubConnector)
 
 
 # Configure logging
@@ -28,66 +25,37 @@ iot_connector = IoTHubConnector(
 
 iot_connector.connect()
 
-
-def on_connect(
-    client,
-    userdata,
-    flags,
-    rc
-):
+def on_connect(client, userdata, flags, rc):
     """
     Called when MQTT connects to the broker.
     """
 
     if rc == 0:
 
-        logging.info(
-            f"Connected to MQTT Broker: {MQTT_BROKER}"
-        )
-
-        client.subscribe(
-            PROCESSED_TOPIC
-        )
-
-        logging.info(
-            f"Subscribed to topic: {PROCESSED_TOPIC}"
-        )
+        logging.info(f"Connected to MQTT Broker: {MQTT_BROKER}")
+        client.subscribe(PROCESSED_TOPIC)
+        logging.info(f"Subscribed to topic: {PROCESSED_TOPIC}")
 
     else:
 
-        logging.error(
-            f"MQTT connection failed: {rc}"
-        )
+        logging.error(f"MQTT connection failed: {rc}")
 
 
-def on_message(
-    client,
-    userdata,
-    msg
-):
+def on_message(client, userdata, msg):
+    
     """
     Called when a message is received from MQTT.
     """
 
     try:
 
-        logging.info(
-            "Telemetry received from MQTT"
-        )
-
-        iot_connector.send_telemetry(
-            payload
-        )
-
-        logging.info(
-            "Telemetry sent to Azure IoT Hub"
-        )
+        logging.info("Telemetry received from MQTT")
+        iot_connector.send_telemetry(payload)
+        logging.info("Telemetry sent to Azure IoT Hub")
 
     except Exception as ex:
 
-        logging.error(
-            f"Failed to send telemetry: {ex}"
-        )
+        logging.error(f"Failed to send telemetry: {ex}")
 
 
 # Create MQTT client
@@ -98,13 +66,6 @@ mqtt_client.on_message = on_message
 
 
 # Connect to MQTT broker
-mqtt_client.connect(
-    MQTT_BROKER,
-    MQTT_PORT
-)
-
-logging.info(
-    "Cloud Connector started"
-)
-
+mqtt_client.connect(MQTT_BROKER, MQTT_PORT)
+logging.info("Cloud Connector started")
 mqtt_client.loop_forever()

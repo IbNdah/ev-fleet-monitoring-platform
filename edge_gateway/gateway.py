@@ -1,11 +1,19 @@
 import logging
+import json
 
+from cloud.iot_hub_connector import IoTHubConnector
 from edge_gateway.validator import TelemetryValidator
 from edge_gateway.translator import TelemetryTranslator
 from edge_gateway.mqtt_publisher import MQTTPublisher
 from edge_gateway.mqtt_subscriber import MQTTSubscriber
-from shared.config import (RAW_TOPIC, PROCESSED_TOPIC, REJECTED_TOPIC, LOG_LEVEL)
 
+from shared.config import (
+    RAW_TOPIC,
+    PROCESSED_TOPIC,
+    REJECTED_TOPIC,
+    LOG_LEVEL,
+    IOT_HUB_CONNECTION_STRING
+)
 
 logging.basicConfig(
     level=LOG_LEVEL,
@@ -21,12 +29,18 @@ class EdgeGateway:
     - Validating payloads
     - Translating payloads
     - Republishing processed telemetry
+    - Forwarding telemetry to Azure IoT Hub
     """
 
     def __init__(self):
 
         self.publisher = MQTTPublisher()
         self.publisher.connect()
+
+        self.iot_hub = IoTHubConnector(
+            IOT_HUB_CONNECTION_STRING
+        )
+        self.iot_hub.connect()
 
         self.subscriber = MQTTSubscriber(
             self.process_message
@@ -72,6 +86,22 @@ class EdgeGateway:
             "Published processed telemetry"
         )
 
+        try:
+
+            self.iot_hub.send_telemetry(
+                json.dumps(translated)
+            )
+
+            logging.info(
+                "Sent telemetry to Azure IoT Hub"
+            )
+
+        except Exception as ex:
+
+            logging.error(
+                f"IoT Hub send failed: {ex}"
+            )
+
     def start(self):
         """
         Start Edge Gateway.
@@ -95,5 +125,6 @@ class EdgeGateway:
 
 
 if __name__ == "__main__":
+
     gateway = EdgeGateway()
     gateway.start()

@@ -1,5 +1,3 @@
-import json
-
 from azure.iot.device import (
     IoTHubDeviceClient,
     Message
@@ -7,51 +5,31 @@ from azure.iot.device import (
 
 
 class IoTHubConnector:
-    """
-    Sends telemetry to Azure IoT Hub.
-    """
 
-    def __init__(
-        self,
-        connection_string: str
-    ):
+    def __init__(self, connection_string):
+
+        self.connection_string = connection_string
+        self.client = None
+
+    def connect(self):
 
         self.client = (
             IoTHubDeviceClient.create_from_connection_string(
-                connection_string
+                self.connection_string
             )
         )
 
-    def connect(self):
-        """
-        Connect to Azure IoT Hub.
-        """
-
         self.client.connect()
 
+    def send_telemetry(self, payload):
 
-    
-    
-    
-    def send_telemetry(
-        self,
-        payload: str
-    ):
-        """
-        Send telemetry message to Azure IoT Hub.
-        """
-
-        message = Message(
-            payload
-        )
+        message = Message(payload)
 
         self.client.send_message(
             message
         )
 
     def disconnect(self):
-        """
-        Disconnect from Azure IoT Hub.
-        """
 
-        self.client.disconnect()
+        if self.client:
+            self.client.disconnect()
