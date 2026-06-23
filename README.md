@@ -46,7 +46,7 @@ The project demonstrates real-world concepts used in modern IoT and cloud platfo
 | Event Hub Trigger | ✅ |
 | End-to-End Telemetry Pipeline | ✅ |
 | Automated Tests | ✅ |
-| Cosmos DB | ⏳ |
+| Cosmos DB | ✅ |
 | Monitoring & Alerting | ⏳ |
 | Fleet Analytics | ⏳ |
 
