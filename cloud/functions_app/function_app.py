@@ -2,29 +2,40 @@ import json
 import logging
 
 import azure.functions as func
+from services.keyvault_service import KeyVaultService
+from services.cosmos_service import CosmosService
+
 
 app = func.FunctionApp()
-
 
 @app.event_hub_message_trigger(
     arg_name="event",
     event_hub_name="messages/events",
     connection="EventHubConnection"
 )
+
 def process_telemetry(event: func.EventHubEvent):
 
     try:
         raw_payload = event.get_body().decode("utf-8")
 
         payload = json.loads(raw_payload)
+        kv = KeyVaultService()
+        endpoint = kv.get_secret("cosmos-endpoint")
+        
+        logging.info(f" Retrieved Secret: {endpoint}")
 
+        cosmos = CosmosService()
+        logging.info("Initializing Cosmos Service...")
+        cosmos.save_telemetry(payload)
+        logging.info("... TELEMETRY persisted to Cosmos DB ...")
+        
+        
         vehicle_id = payload.get("vehicleId", "unknown")
-
-        logging.info("========== TELEMETRY RECEIVED ==========")
+        logging.info("========================================")
+        logging.info("=== TELEMETRY received from Vehicle ===")
         logging.info(payload)
-        logging.info(
-            f"Telemetry received from vehicle: {vehicle_id}"
-        )
+        logging.info(f"Telemetry received from vehicle: {vehicle_id}")
         logging.info("========================================")
 
     except Exception as ex:
