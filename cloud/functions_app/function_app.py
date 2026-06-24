@@ -1,44 +1,69 @@
 import json
 import logging
+import time
+import uuid
 
 import azure.functions as func
-from services.keyvault_service import KeyVaultService
+
 from services.cosmos_service import CosmosService
 
 
 app = func.FunctionApp()
+
+cosmos = CosmosService()
+
 
 @app.event_hub_message_trigger(
     arg_name="event",
     event_hub_name="messages/events",
     connection="EventHubConnection"
 )
-
 def process_telemetry(event: func.EventHubEvent):
 
+    correlation_id = str(uuid.uuid4())
+
+    start = time.time()
+
     try:
-        raw_payload = event.get_body().decode("utf-8")
+
+        raw_payload = event.get_body().decode(
+            "utf-8"
+        )
 
         payload = json.loads(raw_payload)
-        kv = KeyVaultService()
-        endpoint = kv.get_secret("cosmos-endpoint")
-        
-        logging.info(f" Retrieved Secret: {endpoint}")
 
-        cosmos = CosmosService()
-        logging.info("Initializing Cosmos Service...")
-        cosmos.save_telemetry(payload)
-        logging.info("... TELEMETRY persisted to Cosmos DB ...")
-        
-        
-        vehicle_id = payload.get("vehicleId", "unknown")
-        logging.info("========================================")
-        logging.info("=== TELEMETRY received from Vehicle ===")
-        logging.info(payload)
-        logging.info(f"Telemetry received from vehicle: {vehicle_id}")
-        logging.info("========================================")
+        vehicle_id = payload.get(
+            "vehicleId",
+            "unknown"
+        )
+
+        cosmos_ms = cosmos.save_telemetry(
+            payload
+        )
+
+        duration_ms = round(
+            (time.time() - start) * 1000,
+            2
+        )
+
+        logging.info(
+            "\n"
+            "====================================\n"
+            f"Vehicle      : {vehicle_id}\n"
+            f"Battery      : {payload.get('batterySoc')} %\n"
+            f"Temperature  : {payload.get('batteryTemperature')} °C\n"
+            f"Cosmos Write : {cosmos_ms} ms\n"
+            f"Duration     : {duration_ms} ms\n"
+            f"Correlation  : {correlation_id}\n"
+            "===================================="
+        )
 
     except Exception as ex:
+
         logging.error(
-            f"Processing failed: {str(ex)}"
+            {
+                "correlationId": correlation_id,
+                "error": str(ex)
+            },
+            exc_info=True
         )

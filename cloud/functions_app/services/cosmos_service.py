@@ -1,31 +1,62 @@
 import uuid
+import logging
+import time
+from datetime import datetime, timezone
 
-from azure.cosmos import CosmosClient, PartitionKey
+from azure.cosmos import CosmosClient
+from azure.cosmos import PartitionKey
 from services.keyvault_service import KeyVaultService
 
 
 class CosmosService:
 
+    _client = None
+    _database = None
+    _container = None
+
     def __init__(self):
 
-        kv = KeyVaultService()
+        if CosmosService._client is None:
 
-        endpoint = kv.get_secret("cosmos-endpoint")
-        key = kv.get_secret("cosmos-key")
-        client = CosmosClient(endpoint, credential=key)
+            kv = KeyVaultService()
 
-        self.database = client.create_database_if_not_exists(id="fleetdb")
+            endpoint = kv.get_secret("cosmos-endpoint")
+            key = kv.get_secret("cosmos-key")
 
-        self.container = (
-            self.database.create_container_if_not_exists(
-                id="telemetry",
-                partition_key=PartitionKey(
-                    path="/vehicleId"
+            CosmosService._client = CosmosClient(
+                endpoint,
+                credential=key
+            )
+
+            CosmosService._database = (
+                CosmosService._client.create_database_if_not_exists(
+                    id="fleetdb"
                 )
             )
-        )
 
-    def save_telemetry(self, payload):
+            CosmosService._container = (
+                CosmosService._database.create_container_if_not_exists(
+                    id="telemetry",
+                    partition_key=PartitionKey(
+                        path="/vehicleId"
+                    )
+                )
+            )
 
-        payload["id"] = str(uuid.uuid4())
-        self.container.upsert_item(payload)
+    def save_telemetry(self, telemetry):
+
+        if "id" not in telemetry:
+            telemetry["id"] = str(uuid.uuid4())
+
+        if "processedTimestamp" not in telemetry:
+            telemetry["processedTimestamp"] = (
+                datetime.now(timezone.utc).isoformat()
+            )
+
+        start = time.time()
+        CosmosService._container.upsert_item(telemetry)
+        cosmos_duration = round((time.time() - start) * 1000, 2)
+        
+        logging.info(f"Telemetry saved: {telemetry['vehicleId']}")
+
+        return cosmos_duration

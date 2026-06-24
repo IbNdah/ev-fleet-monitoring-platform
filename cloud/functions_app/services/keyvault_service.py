@@ -1,29 +1,45 @@
 import os
+import logging
 
-from azure.identity import (DefaultAzureCredential, AzureCliCredential)
+from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 
-if os.getenv("AZURE_FUNCTIONS_ENVIRONMENT") == "Development":
-    credential = AzureCliCredential()
-else:
-    credential = DefaultAzureCredential()
-    
 
 class KeyVaultService:
 
+    _client = None
+    _cache = {}
+
     def __init__(self):
 
-        vault_url = os.environ["KEYVAULT_URL"]
+        if KeyVaultService._client is None:
 
-        credential = DefaultAzureCredential(exclude_managed_identity_credential=True)
+            vault_url = os.getenv("KEY_VAULT_URL")
+            logging.info(f"Vault URL: {vault_url}")
 
-        self.client = SecretClient(
-            vault_url=vault_url,
-            credential=credential
+            if not vault_url:
+                raise ValueError(
+                    "KEY_VAULT_URL is not configured."
+                )
+
+            credential = DefaultAzureCredential()
+
+            KeyVaultService._client = SecretClient(
+                vault_url=vault_url,
+                credential=credential
+            )
+
+    def get_secret(self, secret_name):
+
+        if secret_name in KeyVaultService._cache:
+            return KeyVaultService._cache[secret_name]
+
+        value = (
+            KeyVaultService._client
+            .get_secret(secret_name)
+            .value
         )
 
-    def get_secret(self, secret_name: str):
+        KeyVaultService._cache[secret_name] = value
 
-        return self.client.get_secret(
-            secret_name
-        ).value
+        return value
