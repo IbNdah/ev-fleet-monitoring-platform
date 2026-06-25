@@ -6,3 +6,4 @@ azure-functions
 azure-cosmos
 azure-keyvault-secrets
 azure-identity
+azure-monitor-opentelemetry

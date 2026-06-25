@@ -16,6 +16,11 @@ variable "storage_account_name" {
   type = string
 }
 
+# Log Analytics Workspace
+variable "log_analytics_workspace_name" {
+  type = string
+}
+
 # Application Insight
 variable "application_insights_name" {
   type = string

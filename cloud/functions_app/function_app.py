@@ -1,16 +1,19 @@
 import json
 import logging
+import os
 import time
 import uuid
 
 import azure.functions as func
-
+from azure.monitor.opentelemetry import configure_azure_monitor
 from services.cosmos_service import CosmosService
 
+if os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"):
+    configure_azure_monitor()
 
 app = func.FunctionApp()
 
-cosmos = CosmosService()
+logger = logging.getLogger(__name__)
 
 
 @app.event_hub_message_trigger(
@@ -20,16 +23,17 @@ cosmos = CosmosService()
 )
 def process_telemetry(event: func.EventHubEvent):
 
+    logger.info("######## VERSION 6.3.5 ########")
+
+    cosmos = CosmosService()
+
     correlation_id = str(uuid.uuid4())
 
     start = time.time()
 
     try:
 
-        raw_payload = event.get_body().decode(
-            "utf-8"
-        )
-
+        raw_payload = event.get_body().decode("utf-8")
         payload = json.loads(raw_payload)
 
         vehicle_id = payload.get(
@@ -37,33 +41,22 @@ def process_telemetry(event: func.EventHubEvent):
             "unknown"
         )
 
-        cosmos_ms = cosmos.save_telemetry(
-            payload
-        )
+        cosmos_ms = cosmos.save_telemetry(payload)
 
         duration_ms = round(
             (time.time() - start) * 1000,
             2
         )
 
-        logging.info(
-            "\n"
-            "====================================\n"
-            f"Vehicle      : {vehicle_id}\n"
-            f"Battery      : {payload.get('batterySoc')} %\n"
-            f"Temperature  : {payload.get('batteryTemperature')} °C\n"
-            f"Cosmos Write : {cosmos_ms} ms\n"
-            f"Duration     : {duration_ms} ms\n"
-            f"Correlation  : {correlation_id}\n"
-            "===================================="
+        logger.info(
+            f"Vehicle={vehicle_id} "
+            f"Battery={payload.get('batterySoc')}% "
+            f"Temperature={payload.get('batteryTemperature')}°C "
+            f"Cosmos={cosmos_ms}ms "
+            f"Duration={duration_ms}ms "
+            f"Correlation={correlation_id}"
         )
 
     except Exception as ex:
 
-        logging.error(
-            {
-                "correlationId": correlation_id,
-                "error": str(ex)
-            },
-            exc_info=True
-        )
+        logger.exception(ex)

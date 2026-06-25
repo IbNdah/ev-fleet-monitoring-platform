@@ -14,7 +14,7 @@ class KeyVaultService:
 
         if KeyVaultService._client is None:
 
-            vault_url = os.getenv("KEY_VAULT_URL")
+            vault_url = os.getenv("KEYVAULT_URL")
             logging.info(f"Vault URL: {vault_url}")
 
             if not vault_url:

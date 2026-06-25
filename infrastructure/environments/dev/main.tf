@@ -48,10 +48,11 @@ module "monitoring" {
 
   source = "../../modules/monitoring"
 
-  application_insights_name = var.application_insights_name
-  resource_group_name       = module.resource_group.resource_group_name
-  location                  = module.resource_group.resource_group_location
+  application_insights_name  = var.application_insights_name
+  log_analytics_workspace_name = var.log_analytics_workspace_name
 
+  resource_group_name = module.resource_group.resource_group_name
+  location            = module.resource_group.resource_group_location
 }
 
 # Function App
