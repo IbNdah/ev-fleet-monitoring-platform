@@ -10,7 +10,7 @@ class TelemetryGenerator:
 
         if vehicle.scenario == Scenario.NORMAL_DRIVING:
 
-            vehicle.change_state("DRIVING")
+            return
 
         elif vehicle.scenario == Scenario.FAST_CHARGING:
 
@@ -19,12 +19,10 @@ class TelemetryGenerator:
         elif vehicle.scenario == Scenario.LOW_BATTERY:
 
             vehicle.battery_ecu.soc = 10
-            vehicle.change_state("DRIVING")
-
+            
         elif vehicle.scenario == Scenario.OVERHEATING:
 
             vehicle.battery_ecu.temperature = 70
-            vehicle.change_state("DRIVING")
 
         else:
 

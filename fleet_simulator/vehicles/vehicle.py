@@ -37,6 +37,8 @@ class Vehicle:
         telemetry = self.battery_ecu.update()
         
         # Add vehicle-level data to the telemetry
+        self.state = self.battery_ecu.state
+        
         telemetry["vehicleId"] = self.vehicle_id
         telemetry["vehicleState"] = self.state
                

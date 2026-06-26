@@ -87,6 +87,8 @@ class EdgeGateway:
         )
 
         try:
+            logging.info(
+                f"Sending vehicle {translated['vehicleId']}")
 
             self.iot_hub.send_telemetry(
                 json.dumps(translated)

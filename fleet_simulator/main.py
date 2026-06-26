@@ -44,6 +44,9 @@ def main():
     fleet.add_vehicle(Vehicle("EV-001"))            # Add simulated vehicles
     fleet.add_vehicle(Vehicle("EV-002"))
     fleet.add_vehicle(Vehicle("EV-003"))
+    fleet.add_vehicle(Vehicle("EV-004"))
+    fleet.add_vehicle(Vehicle("EV-005"))
+
 
     publisher = MQTTPublisher()                     # Create MQTT publisher
     publisher.connect()                             # Connect to MQTT broker
