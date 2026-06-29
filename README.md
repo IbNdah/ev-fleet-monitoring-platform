@@ -253,7 +253,7 @@ func azure functionapp publish evfleet-function-dev
 
 <p align="center">
 
-<img src="docs/screenshots/application-insights.png" width="95%">
+<img src="docs/screenshots/applications-insights.png" width="95%">
 
 </p>
 
