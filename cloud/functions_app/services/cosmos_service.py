@@ -37,9 +37,7 @@ class CosmosService:
             CosmosService._container = (
                 CosmosService._database.create_container_if_not_exists(
                     id="telemetry",
-                    partition_key=PartitionKey(
-                        path="/vehicleId"
-                    )
+                    partition_key=PartitionKey(path="/vehicleId")
                 )
             )
 
@@ -54,9 +52,11 @@ class CosmosService:
             )
 
         start = time.time()
-        CosmosService._container.upsert_item(telemetry)
+
+        result = CosmosService._container.upsert_item(telemetry)
+
         cosmos_duration = round((time.time() - start) * 1000, 2)
-        
-        logging.info(f"Telemetry saved: {telemetry['vehicleId']}")
+
+        logging.info("========== COSMOS WRITE ==========")
 
         return cosmos_duration
