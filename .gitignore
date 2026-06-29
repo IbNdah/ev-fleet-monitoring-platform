@@ -7,9 +7,12 @@ __pycache__/
 tempCodeRunnerFile.py
 
 # Virtual Environments
-venv/
 .venv/
+.venv*/
+venv/
+env/
 .env
+*.env
 
 # VS Code
 .vscode/
