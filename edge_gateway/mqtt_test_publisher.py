@@ -1,4 +1,5 @@
 import json
+
 import paho.mqtt.client as mqtt
 
 broker = "localhost"
@@ -9,13 +10,10 @@ telemetry = {
     "state": "DRIVING",
     "speed": 78,
     "battery_soc": 84,
-    "temperature": 31.2
+    "temperature": 31.2,
 }
 
-client = mqtt.Client(
-    mqtt.CallbackAPIVersion.VERSION2,
-    client_id="test-publisher"
-)
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id="test-publisher")
 
 client.connect(broker, 1883, 60)
 

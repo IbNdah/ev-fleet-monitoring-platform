@@ -11,11 +11,7 @@ class MockPublisher:
         self.topic = None
         self.payload = None
 
-    def publish(
-        self,
-        topic,
-        payload
-    ):
+    def publish(self, topic, payload):
 
         self.topic = topic
         self.payload = payload
@@ -33,14 +29,9 @@ def test_process_invalid_payload():
         "timestamp": "2026-01-01T00:00:00Z",
         "soc": 150,
         "voltage": 3.7,
-        "temperature": 30
+        "temperature": 30,
     }
 
-    gateway.process_message(
-        payload
-    )
+    gateway.process_message(payload)
 
-    assert (
-        gateway.publisher.topic
-        == "evfleet/telemetry/rejected"
-    )
+    assert gateway.publisher.topic == "evfleet/telemetry/rejected"

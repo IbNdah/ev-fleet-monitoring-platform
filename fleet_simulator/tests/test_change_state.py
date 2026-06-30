@@ -1,5 +1,6 @@
 from fleet_simulator.vehicles.vehicle import Vehicle
 
+
 def test_change_state():
     """
     Verify that changing the vehicle state updates both

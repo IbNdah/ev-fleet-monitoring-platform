@@ -1,10 +1,9 @@
-import uuid
 import logging
 import time
+import uuid
 from datetime import datetime, timezone
 
-from azure.cosmos import CosmosClient
-from azure.cosmos import PartitionKey
+from azure.cosmos import CosmosClient, PartitionKey
 from services.keyvault_service import KeyVaultService
 
 
@@ -23,21 +22,15 @@ class CosmosService:
             endpoint = kv.get_secret("cosmos-endpoint")
             key = kv.get_secret("cosmos-key")
 
-            CosmosService._client = CosmosClient(
-                endpoint,
-                credential=key
-            )
+            CosmosService._client = CosmosClient(endpoint, credential=key)
 
             CosmosService._database = (
-                CosmosService._client.create_database_if_not_exists(
-                    id="fleetdb"
-                )
+                CosmosService._client.create_database_if_not_exists(id="fleetdb")
             )
 
             CosmosService._container = (
                 CosmosService._database.create_container_if_not_exists(
-                    id="telemetry",
-                    partition_key=PartitionKey(path="/vehicleId")
+                    id="telemetry", partition_key=PartitionKey(path="/vehicleId")
                 )
             )
 
@@ -47,9 +40,7 @@ class CosmosService:
             telemetry["id"] = str(uuid.uuid4())
 
         if "processedTimestamp" not in telemetry:
-            telemetry["processedTimestamp"] = (
-                datetime.now(timezone.utc).isoformat()
-            )
+            telemetry["processedTimestamp"] = datetime.now(timezone.utc).isoformat()
 
         start = time.time()
 

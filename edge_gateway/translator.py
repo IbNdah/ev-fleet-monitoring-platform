@@ -1,4 +1,4 @@
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 
 class TelemetryTranslator:
@@ -12,32 +12,24 @@ class TelemetryTranslator:
 
         return {
             "schemaVersion": "1.0",
-
             "vehicleId": data["vehicleId"],
             "deviceId": data["deviceId"],
-
             "vehicleState": data["vehicleState"],
             "batteryState": data["state"],
-
             "batterySoc": data["soc"],
             "batteryTemperature": data["temperature"],
             "batteryVoltage": data["voltage"],
             "batteryCurrent": data["current"],
-
             "faultCode": data["faultCode"],
-
             "telemetryTimestamp": data["timestamp"],
-
-            "processedTimestamp":
-                datetime.now(
-                    UTC
-                ).isoformat()
+            "processedTimestamp": datetime.now(UTC).isoformat(),
         }
+
 
 # -----------------------------------
 # Quick test
 # -----------------------------------
-       
+
 if __name__ == "__main__":
 
     telemetry = {
@@ -50,13 +42,9 @@ if __name__ == "__main__":
         "faultCode": None,
         "timestamp": "2026-06-05T16:08:20.227267+00:00",
         "vehicleId": "EV-001",
-        "vehicleState": "DRIVING"
+        "vehicleState": "DRIVING",
     }
 
-    translated = (
-        TelemetryTranslator.translate(
-            telemetry
-        )
-    )
+    translated = TelemetryTranslator.translate(telemetry)
 
     print(translated)

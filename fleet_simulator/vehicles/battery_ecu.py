@@ -1,5 +1,5 @@
 import random
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 
 class BatteryECU:
@@ -32,10 +32,7 @@ class BatteryECU:
     def update(self):
 
         # Small voltage variation
-        self.voltage += random.uniform(
-            -0.02,
-            0.02
-        )
+        self.voltage += random.uniform(-0.02, 0.02)
 
         # ==================================================
         # FAULT MODE
@@ -46,10 +43,7 @@ class BatteryECU:
             self.current = 0
 
             # Active cooling
-            self.temperature -= random.uniform(
-                1.0,
-                3.0
-            )
+            self.temperature -= random.uniform(1.0, 3.0)
 
             # Recover after cooling
             if self.temperature <= 55:
@@ -73,12 +67,7 @@ class BatteryECU:
 
             elif random.random() < 0.05:
 
-                self.state = random.choice(
-                    [
-                        "DRIVING",
-                        "PARKED"
-                    ]
-                )
+                self.state = random.choice(["DRIVING", "PARKED"])
 
             # -----------------------------------------
             # DRIVING
@@ -86,20 +75,11 @@ class BatteryECU:
 
             if self.state == "DRIVING":
 
-                self.soc -= random.uniform(
-                    0.5,
-                    2.0
-                )
+                self.soc -= random.uniform(0.5, 2.0)
 
-                self.temperature += random.uniform(
-                    0.3,
-                    1.0
-                )
+                self.temperature += random.uniform(0.3, 1.0)
 
-                self.current = random.uniform(
-                    20,
-                    80
-                )
+                self.current = random.uniform(20, 80)
 
                 # Thermal protection
 
@@ -113,20 +93,11 @@ class BatteryECU:
 
             elif self.state == "CHARGING":
 
-                self.soc += random.uniform(
-                    2.0,
-                    5.0
-                )
+                self.soc += random.uniform(2.0, 5.0)
 
-                self.temperature += random.uniform(
-                    -0.5,
-                    0.3
-                )
+                self.temperature += random.uniform(-0.5, 0.3)
 
-                self.current = random.uniform(
-                    -40,
-                    -10
-                )
+                self.current = random.uniform(-40, -10)
 
                 if self.soc >= 90:
 
@@ -138,33 +109,21 @@ class BatteryECU:
 
             elif self.state == "PARKED":
 
-                self.current = random.uniform(
-                    -1,
-                    1
-                )
+                self.current = random.uniform(-1, 1)
 
                 # Cooling while parked
 
                 if self.temperature > 35:
 
-                    self.temperature -= random.uniform(
-                        0.3,
-                        1.0
-                    )
+                    self.temperature -= random.uniform(0.3, 1.0)
 
                 else:
 
-                    self.temperature += random.uniform(
-                        -0.2,
-                        0.2
-                    )
+                    self.temperature += random.uniform(-0.2, 0.2)
 
                 # Resume driving
 
-                if (
-                    self.temperature < 45
-                    and random.random() < 0.05
-                ):
+                if self.temperature < 45 and random.random() < 0.05:
 
                     self.state = "DRIVING"
 
@@ -181,20 +140,11 @@ class BatteryECU:
         # Physical limits
         # ==================================================
 
-        self.soc = max(
-            0,
-            min(100, self.soc)
-        )
+        self.soc = max(0, min(100, self.soc))
 
-        self.temperature = max(
-            -20,
-            min(80, self.temperature)
-        )
+        self.temperature = max(-20, min(80, self.temperature))
 
-        self.voltage = max(
-            3.0,
-            min(4.2, self.voltage)
-        )
+        self.voltage = max(3.0, min(4.2, self.voltage))
 
         # ==================================================
         # Telemetry payload
@@ -202,27 +152,13 @@ class BatteryECU:
 
         return {
             "deviceId": self.device_id,
-            "temperature": round(
-                self.temperature,
-                2
-            ),
-            "current": round(
-                self.current,
-                2
-            ),
-            "voltage": round(
-                self.voltage,
-                2
-            ),
-            "soc": round(
-                self.soc,
-                2
-            ),
+            "temperature": round(self.temperature, 2),
+            "current": round(self.current, 2),
+            "voltage": round(self.voltage, 2),
+            "soc": round(self.soc, 2),
             "state": self.state,
             "faultCode": self.fault_code,
-            "timestamp": datetime.now(
-                UTC
-            ).isoformat()
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
 

@@ -1,24 +1,20 @@
-import logging
 import json
+import logging
 
 from cloud.iot_hub_connector import IoTHubConnector
-from edge_gateway.validator import TelemetryValidator
-from edge_gateway.translator import TelemetryTranslator
 from edge_gateway.mqtt_publisher import MQTTPublisher
 from edge_gateway.mqtt_subscriber import MQTTSubscriber
-
+from edge_gateway.translator import TelemetryTranslator
+from edge_gateway.validator import TelemetryValidator
 from shared.config import (
-    RAW_TOPIC,
-    PROCESSED_TOPIC,
-    REJECTED_TOPIC,
+    IOT_HUB_CONNECTION_STRING,
     LOG_LEVEL,
-    IOT_HUB_CONNECTION_STRING
+    PROCESSED_TOPIC,
+    RAW_TOPIC,
+    REJECTED_TOPIC,
 )
 
-logging.basicConfig(
-    level=LOG_LEVEL,
-    format="%(asctime)s [%(levelname)s] %(message)s"
-)
+logging.basicConfig(level=LOG_LEVEL, format="%(asctime)s [%(levelname)s] %(message)s")
 
 
 class EdgeGateway:
@@ -37,14 +33,10 @@ class EdgeGateway:
         self.publisher = MQTTPublisher()
         self.publisher.connect()
 
-        self.iot_hub = IoTHubConnector(
-            IOT_HUB_CONNECTION_STRING
-        )
+        self.iot_hub = IoTHubConnector(IOT_HUB_CONNECTION_STRING)
         self.iot_hub.connect()
 
-        self.subscriber = MQTTSubscriber(
-            self.process_message
-        )
+        self.subscriber = MQTTSubscriber(self.process_message)
 
     def process_message(self, payload):
         """
@@ -52,78 +44,45 @@ class EdgeGateway:
         validation and translation pipeline.
         """
 
-        logging.info(
-            "Received raw telemetry"
-        )
+        logging.info("Received raw telemetry")
 
-        if not TelemetryValidator.validate(
-            payload
-        ):
+        if not TelemetryValidator.validate(payload):
 
-            logging.warning(
-                "Invalid telemetry received"
-            )
+            logging.warning("Invalid telemetry received")
 
-            self.publisher.publish(
-                REJECTED_TOPIC,
-                payload
-            )
+            self.publisher.publish(REJECTED_TOPIC, payload)
 
             return
 
-        translated = (
-            TelemetryTranslator.translate(
-                payload
-            )
-        )
+        translated = TelemetryTranslator.translate(payload)
 
-        self.publisher.publish(
-            PROCESSED_TOPIC,
-            translated
-        )
+        self.publisher.publish(PROCESSED_TOPIC, translated)
 
-        logging.info(
-            "Published processed telemetry"
-        )
+        logging.info("Published processed telemetry")
 
         try:
-            logging.info(
-                f"Sending vehicle {translated['vehicleId']}")
+            logging.info(f"Sending vehicle {translated['vehicleId']}")
 
-            self.iot_hub.send_telemetry(
-                json.dumps(translated)
-            )
+            self.iot_hub.send_telemetry(json.dumps(translated))
 
-            logging.info(
-                "Sent telemetry to Azure IoT Hub"
-            )
+            logging.info("Sent telemetry to Azure IoT Hub")
 
         except Exception as ex:
 
-            logging.error(
-                f"IoT Hub send failed: {ex}"
-            )
+            logging.error(f"IoT Hub send failed: {ex}")
 
     def start(self):
         """
         Start Edge Gateway.
         """
 
-        logging.info(
-            "Edge Gateway started"
-        )
+        logging.info("Edge Gateway started")
 
-        logging.info(
-            f"Listening on: {RAW_TOPIC}"
-        )
+        logging.info(f"Listening on: {RAW_TOPIC}")
 
-        logging.info(
-            f"Publishing to: {PROCESSED_TOPIC}"
-        )
+        logging.info(f"Publishing to: {PROCESSED_TOPIC}")
 
-        self.subscriber.start(
-            RAW_TOPIC
-        )
+        self.subscriber.start(RAW_TOPIC)
 
 
 if __name__ == "__main__":

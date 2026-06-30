@@ -1,6 +1,4 @@
-from edge_gateway.translator import (
-    TelemetryTranslator
-)
+from edge_gateway.translator import TelemetryTranslator
 
 
 def test_translation():
@@ -15,26 +13,13 @@ def test_translation():
         "faultCode": None,
         "timestamp": "2026-01-01T00:00:00Z",
         "vehicleId": "EV-001",
-        "vehicleState": "DRIVING"
+        "vehicleState": "DRIVING",
     }
 
-    translated = (
-        TelemetryTranslator.translate(
-            payload
-        )
-    )
+    translated = TelemetryTranslator.translate(payload)
 
-    assert (
-        translated["batterySoc"]
-        == 80
-    )
+    assert translated["batterySoc"] == 80
 
-    assert (
-        translated["vehicleId"]
-        == "EV-001"
-    )
+    assert translated["vehicleId"] == "EV-001"
 
-    assert (
-        translated["schemaVersion"]
-        == "1.0"
-    )
+    assert translated["schemaVersion"] == "1.0"

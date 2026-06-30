@@ -1,6 +1,4 @@
-from edge_gateway.validator import (
-    TelemetryValidator
-)
+from edge_gateway.validator import TelemetryValidator
 
 
 def test_valid_payload():
@@ -11,14 +9,10 @@ def test_valid_payload():
         "timestamp": "2026-01-01T00:00:00Z",
         "soc": 80,
         "voltage": 3.7,
-        "temperature": 25
+        "temperature": 25,
     }
 
-    assert (
-        TelemetryValidator.validate(
-            payload
-        ) is True
-    )
+    assert TelemetryValidator.validate(payload) is True
 
 
 def test_invalid_soc():
@@ -29,11 +23,7 @@ def test_invalid_soc():
         "timestamp": "2026-01-01T00:00:00Z",
         "soc": 150,
         "voltage": 3.7,
-        "temperature": 25
+        "temperature": 25,
     }
 
-    assert (
-        TelemetryValidator.validate(
-            payload
-        ) is False
-    )
+    assert TelemetryValidator.validate(payload) is False

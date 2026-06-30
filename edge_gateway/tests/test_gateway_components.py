@@ -1,6 +1,4 @@
-from edge_gateway.gateway import (
-    EdgeGateway
-)
+from edge_gateway.gateway import EdgeGateway
 
 
 class MockPublisher:
@@ -13,11 +11,7 @@ class MockPublisher:
         self.topic = None
         self.payload = None
 
-    def publish(
-        self,
-        topic,
-        payload
-    ):
+    def publish(self, topic, payload):
 
         self.topic = topic
         self.payload = payload
@@ -39,21 +33,11 @@ def test_process_valid_payload():
         "current": 5,
         "state": "DRIVING",
         "faultCode": None,
-        "vehicleState": "DRIVING"
+        "vehicleState": "DRIVING",
     }
 
-    gateway.process_message(
-        payload
-    )
+    gateway.process_message(payload)
 
-    assert (
-        gateway.publisher.topic
-        == "evfleet/telemetry/processed"
-    )
+    assert gateway.publisher.topic == "evfleet/telemetry/processed"
 
-    assert (
-        gateway.publisher.payload[
-            "batterySoc"
-        ]
-        == 80
-    )
+    assert gateway.publisher.payload["batterySoc"] == 80

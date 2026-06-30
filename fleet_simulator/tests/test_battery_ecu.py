@@ -1,5 +1,6 @@
 from fleet_simulator.vehicles.vehicle import Vehicle
 
+
 def test_simulate_cycle():
     """
     Verify that a telemetry payload is generated and contains

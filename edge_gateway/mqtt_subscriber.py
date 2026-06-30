@@ -1,11 +1,8 @@
 import json
+
 import paho.mqtt.client as mqtt
 
-from shared.config import (
-    MQTT_BROKER,
-    MQTT_PORT,
-    MQTT_KEEPALIVE
-)
+from shared.config import MQTT_BROKER, MQTT_KEEPALIVE, MQTT_PORT
 
 
 class MQTTSubscriber:
@@ -15,54 +12,27 @@ class MQTTSubscriber:
     to a callback function.
     """
 
-    def __init__(
-        self,
-        message_handler
-    ):
+    def __init__(self, message_handler):
 
-        self.message_handler = (
-            message_handler
-        )
+        self.message_handler = message_handler
 
         self.client = mqtt.Client()
 
-    def on_message(
-        self,
-        client,
-        userdata,
-        message
-    ):
+    def on_message(self, client, userdata, message):
 
-        payload = json.loads(
-            message.payload.decode()
-        )
+        payload = json.loads(message.payload.decode())
 
-        self.message_handler(
-            payload
-        )
+        self.message_handler(payload)
 
-    def start(
-        self,
-        topic
-    ):
+    def start(self, topic):
 
-        self.client.on_message = (
-            self.on_message
-        )
+        self.client.on_message = self.on_message
 
-        self.client.connect(
-            MQTT_BROKER,
-            MQTT_PORT,
-            MQTT_KEEPALIVE
-        )
+        self.client.connect(MQTT_BROKER, MQTT_PORT, MQTT_KEEPALIVE)
 
-        self.client.subscribe(
-            topic
-        )
+        self.client.subscribe(topic)
 
-        print(
-            f"Subscribed to: {topic}"
-        )
+        print(f"Subscribed to: {topic}")
 
         self.client.loop_forever()
 
@@ -71,6 +41,7 @@ class MQTTSubscriber:
 # Quick test
 # -----------------------------------
 
+
 def test_handler(payload):
 
     print(payload)
@@ -78,10 +49,6 @@ def test_handler(payload):
 
 if __name__ == "__main__":
 
-    subscriber = MQTTSubscriber(
-        test_handler
-    )
+    subscriber = MQTTSubscriber(test_handler)
 
-    subscriber.start(
-        "evfleet/telemetry/raw"
-    )
+    subscriber.start("evfleet/telemetry/raw")

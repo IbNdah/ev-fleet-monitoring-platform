@@ -6,9 +6,7 @@ import uuid
 
 import azure.functions as func
 from azure.monitor.opentelemetry import configure_azure_monitor
-
 from services.cosmos_service import CosmosService
-
 
 # -----------------------------------------------------------------------------
 # Configure Azure Monitor / Application Insights
@@ -27,10 +25,9 @@ logger = logging.getLogger(__name__)
 # Event Hub Trigger
 # -----------------------------------------------------------------------------
 
+
 @app.event_hub_message_trigger(
-    arg_name="event",
-    event_hub_name="messages/events",
-    connection="EventHubConnection"
+    arg_name="event", event_hub_name="messages/events", connection="EventHubConnection"
 )
 def process_telemetry(event: func.EventHubEvent):
     """
@@ -70,9 +67,9 @@ def process_telemetry(event: func.EventHubEvent):
                 "custom_dimensions": {
                     "vehicleId": vehicle_id,
                     "deviceId": payload.get("deviceId"),
-                    "correlationId": correlation_id
+                    "correlationId": correlation_id,
                 }
-            }
+            },
         )
 
         # ---------------------------------------------------------------------
@@ -85,10 +82,7 @@ def process_telemetry(event: func.EventHubEvent):
         # Compute execution time
         # ---------------------------------------------------------------------
 
-        function_duration = round(
-            (time.perf_counter() - function_start) * 1000,
-            2
-        )
+        function_duration = round((time.perf_counter() - function_start) * 1000, 2)
 
         # ---------------------------------------------------------------------
         # Structured telemetry log
@@ -97,31 +91,35 @@ def process_telemetry(event: func.EventHubEvent):
         logger.info(
             "Telemetry processed",
             extra={
-                "custom_dimensions": json.dumps({
-                    "vehicleId": vehicle_id,
-                    "deviceId": payload.get("deviceId"),
-                    "batteryState": payload.get("batteryState"),
-                    "batterySoc": payload.get("batterySoc"),
-                    "batteryTemperature": payload.get("batteryTemperature"),
-                    "batteryVoltage": payload.get("batteryVoltage"),
-                    "batteryCurrent": payload.get("batteryCurrent"),
-                    "cosmosDurationMs": cosmos_duration,
-                    "functionDurationMs": function_duration,
-                    "correlationId": correlation_id,
-                    "status": "SUCCESS"
-                })
-            }
+                "custom_dimensions": json.dumps(
+                    {
+                        "vehicleId": vehicle_id,
+                        "deviceId": payload.get("deviceId"),
+                        "batteryState": payload.get("batteryState"),
+                        "batterySoc": payload.get("batterySoc"),
+                        "batteryTemperature": payload.get("batteryTemperature"),
+                        "batteryVoltage": payload.get("batteryVoltage"),
+                        "batteryCurrent": payload.get("batteryCurrent"),
+                        "cosmosDurationMs": cosmos_duration,
+                        "functionDurationMs": function_duration,
+                        "correlationId": correlation_id,
+                        "status": "SUCCESS",
+                    }
+                )
+            },
         )
 
         logger.info(
             "Telemetry persisted",
             extra={
-                "custom_dimensions":json.dumps({
-                    "vehicleId": vehicle_id,
-                    "cosmosDurationMs": cosmos_duration,
-                    "correlationId": correlation_id
-                })
-            }
+                "custom_dimensions": json.dumps(
+                    {
+                        "vehicleId": vehicle_id,
+                        "cosmosDurationMs": cosmos_duration,
+                        "correlationId": correlation_id,
+                    }
+                )
+            },
         )
 
     except Exception:
@@ -132,9 +130,9 @@ def process_telemetry(event: func.EventHubEvent):
                 "custom_dimensions": {
                     "vehicleId": payload.get("vehicleId", "UNKNOWN"),
                     "correlationId": correlation_id,
-                    "status": "FAILED"
+                    "status": "FAILED",
                 }
-            }
+            },
         )
 
         raise

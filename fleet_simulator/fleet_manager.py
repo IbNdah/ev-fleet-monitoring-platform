@@ -1,5 +1,5 @@
+from fleet_simulator.telemetry.telemetry_generator import TelemetryGenerator
 from fleet_simulator.vehicles.vehicle import Vehicle
-from fleet_simulator.telemetry.telemetry_generator import (TelemetryGenerator)
 
 
 class FleetSimulator:
@@ -22,10 +22,8 @@ class FleetSimulator:
 
         for vehicle in self.vehicles:
             TelemetryGenerator.apply_scenario(vehicle)
-            
-            telemetry_data.append(
-                vehicle.simulate_cycle()
-            )
+
+            telemetry_data.append(vehicle.simulate_cycle())
 
         return telemetry_data
 
@@ -35,13 +33,9 @@ if __name__ == "__main__":
 
     fleet = FleetSimulator()
 
-    fleet.add_vehicle(
-        Vehicle("EV-001")
-    )
+    fleet.add_vehicle(Vehicle("EV-001"))
 
-    fleet.add_vehicle(
-        Vehicle("EV-002")
-    )
+    fleet.add_vehicle(Vehicle("EV-002"))
 
     telemetry = fleet.simulate_cycle()
 

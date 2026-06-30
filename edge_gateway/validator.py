@@ -9,7 +9,7 @@ class TelemetryValidator:
         "timestamp",
         "soc",
         "voltage",
-        "temperature"
+        "temperature",
     ]
 
     @staticmethod
@@ -54,11 +54,7 @@ if __name__ == "__main__":
         "timestamp": "2026-06-05T12:00:00Z",
         "soc": 80,
         "voltage": 3.7,
-        "temperature": 30
+        "temperature": 30,
     }
 
-    print(
-        TelemetryValidator.validate(
-            telemetry
-        )
-    )
+    print(TelemetryValidator.validate(telemetry))

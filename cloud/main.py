@@ -1,29 +1,26 @@
 import logging
+
 import paho.mqtt.client as mqtt
 
+from cloud.iot_hub_connector import IoTHubConnector
 from shared.config import (
+    IOT_HUB_CONNECTION_STRING,
     MQTT_BROKER,
     MQTT_PORT,
     PROCESSED_TOPIC,
-    IOT_HUB_CONNECTION_STRING
 )
-
-from cloud.iot_hub_connector import (IoTHubConnector)
-
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 
 # Create Azure IoT Hub connector
-iot_connector = IoTHubConnector(
-    IOT_HUB_CONNECTION_STRING
-)
+iot_connector = IoTHubConnector(IOT_HUB_CONNECTION_STRING)
 
 iot_connector.connect()
+
 
 def on_connect(client, userdata, flags, rc):
     """
@@ -42,7 +39,6 @@ def on_connect(client, userdata, flags, rc):
 
 
 def on_message(client, userdata, msg):
-    
     """
     Called when a message is received from MQTT.
     """

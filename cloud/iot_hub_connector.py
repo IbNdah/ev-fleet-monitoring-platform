@@ -1,7 +1,4 @@
-from azure.iot.device import (
-    IoTHubDeviceClient,
-    Message
-)
+from azure.iot.device import IoTHubDeviceClient, Message
 
 
 class IoTHubConnector:
@@ -13,10 +10,8 @@ class IoTHubConnector:
 
     def connect(self):
 
-        self.client = (
-            IoTHubDeviceClient.create_from_connection_string(
-                self.connection_string
-            )
+        self.client = IoTHubDeviceClient.create_from_connection_string(
+            self.connection_string
         )
 
         self.client.connect()
@@ -25,9 +20,7 @@ class IoTHubConnector:
 
         message = Message(payload)
 
-        self.client.send_message(
-            message
-        )
+        self.client.send_message(message)
 
     def disconnect(self):
 

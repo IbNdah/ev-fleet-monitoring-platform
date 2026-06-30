@@ -1,11 +1,8 @@
 import json
+
 import paho.mqtt.client as mqtt
 
-from shared.config import (
-    MQTT_BROKER,
-    MQTT_PORT,
-    MQTT_KEEPALIVE
-)
+from shared.config import MQTT_BROKER, MQTT_KEEPALIVE, MQTT_PORT
 
 
 class MQTTPublisher:
@@ -18,19 +15,12 @@ class MQTTPublisher:
     def connect(self):
         """Connect to the MQTT broker."""
 
-        self.client.connect(
-            MQTT_BROKER,
-            MQTT_PORT,
-            MQTT_KEEPALIVE
-        )
+        self.client.connect(MQTT_BROKER, MQTT_PORT, MQTT_KEEPALIVE)
 
     def publish(self, topic, payload):
         """Publish telemetry data."""
 
-        self.client.publish(
-            topic,
-            json.dumps(payload)
-        )
+        self.client.publish(topic, json.dumps(payload))
 
     def disconnect(self):
         """Disconnect from the MQTT broker."""
@@ -48,11 +38,6 @@ if __name__ == "__main__":
 
     publisher.connect()
 
-    publisher.publish(
-        "evfleet/test",
-        {
-            "message": "hello mqtt"
-        }
-    )
+    publisher.publish("evfleet/test", {"message": "hello mqtt"})
 
     publisher.disconnect()

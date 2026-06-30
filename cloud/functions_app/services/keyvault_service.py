@@ -1,5 +1,5 @@
-import os
 import logging
+import os
 
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
@@ -18,15 +18,12 @@ class KeyVaultService:
             logging.info(f"Vault URL: {vault_url}")
 
             if not vault_url:
-                raise ValueError(
-                    "KEY_VAULT_URL is not configured."
-                )
+                raise ValueError("KEY_VAULT_URL is not configured.")
 
             credential = DefaultAzureCredential()
 
             KeyVaultService._client = SecretClient(
-                vault_url=vault_url,
-                credential=credential
+                vault_url=vault_url, credential=credential
             )
 
     def get_secret(self, secret_name):
@@ -34,11 +31,7 @@ class KeyVaultService:
         if secret_name in KeyVaultService._cache:
             return KeyVaultService._cache[secret_name]
 
-        value = (
-            KeyVaultService._client
-            .get_secret(secret_name)
-            .value
-        )
+        value = KeyVaultService._client.get_secret(secret_name).value
 
         KeyVaultService._cache[secret_name] = value
 

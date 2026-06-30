@@ -12,8 +12,3 @@ def test_vehicle_creation():
     assert vehicle.vehicle_id == "EV-001"
     assert vehicle.state == "PARKED"
     assert vehicle.battery_ecu is not None
-
-
-
-
-
