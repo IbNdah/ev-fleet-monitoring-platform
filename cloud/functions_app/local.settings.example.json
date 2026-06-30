@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "....",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "EventHubConnection": "Endpoint=sb:....",
+    "KEYVAULT_URL": "https://..."
+  }
+}

@@ -1,0 +1,16 @@
+# Resource Group
+resource_group_name = "rg-evfleet-dev"
+location            = "germanywestcentral"
+iot_hub_name        = "evfleet-telemetry-hub-dev"
+
+# Storage Account
+storage_account_name = "evfleetstoragedev01"
+
+# Log Analytics Workspace
+log_analytics_workspace_name = "evfleet-law-dev"
+
+# Application Insight
+application_insights_name = "evfleet-appinsights-dev"
+
+# Function App
+function_app_name = "evfleet-function-dev"
