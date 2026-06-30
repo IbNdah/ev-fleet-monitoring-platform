@@ -1,0 +1,47 @@
+name: Deploy Azure Function
+
+on:
+    workflow_run:
+        workflows:
+            - Python CI
+            - Terraform CI
+        types:
+            - completed
+
+permissions:
+    id-token: write
+    contents: read
+
+jobs:
+    deploy:
+        if: >
+            github.event.workflow_run.conclusion == 'success'
+
+        runs-on: ubuntu-latest
+
+        environment: dev
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Azure Login (OIDC)
+              uses: azure/login@v2
+              with:
+                  client-id: ${{ secrets.AZURE_CLIENT_ID }}
+                  tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+                  subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+            - name: Deploy Azure Function
+              uses: Azure/functions-action@v1
+              with:
+                  app-name: evfleet-function-dev
+                  package: ./cloud/functions_app
+
+                  - name: Verify Azure Function exists
+
+                  
+  run: |
+    az functionapp show \
+      --name evfleet-function-dev \
+      --resource-group rg-evfleet-dev
