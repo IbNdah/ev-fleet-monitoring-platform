@@ -48,7 +48,7 @@ module "monitoring" {
 
   source = "../../modules/monitoring"
 
-  application_insights_name  = var.application_insights_name
+  application_insights_name    = var.application_insights_name
   log_analytics_workspace_name = var.log_analytics_workspace_name
 
   resource_group_name = module.resource_group.resource_group_name
@@ -74,12 +74,12 @@ module "monitoring" {
 module "cosmosdb" {
   source = "../../modules/cosmosdb"
 
-  cosmosdb_name      = "evfleetcosmosdev"
+  cosmosdb_name = "evfleetcosmosdev"
 
   resource_group_name = module.resource_group.resource_group_name
   location            = module.resource_group.resource_group_location
 
-  database_name = "fleetdb"
+  database_name  = "fleetdb"
   container_name = "telemetry"
 
   partition_key = "/vehicleId"
@@ -90,7 +90,7 @@ module "cosmosdb" {
 module "keyvault" {
   source = "../../modules/keyvault"
 
-  keyvault_name      = "kv-evfleet-dev01"
+  keyvault_name = "kv-evfleet-dev01"
 
   resource_group_name = module.resource_group.resource_group_name
   location            = module.resource_group.resource_group_location

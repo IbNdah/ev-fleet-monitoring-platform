@@ -15,8 +15,8 @@ variable "storage_account_name" {
 }
 
 variable "storage_account_access_key" {
-  type        = string
-  sensitive   = true
+  type      = string
+  sensitive = true
 }
 
 variable "application_insights_connection_string" {
