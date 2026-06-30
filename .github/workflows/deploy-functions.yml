@@ -14,11 +14,9 @@ permissions:
 
 jobs:
     deploy:
-        if: >
-            github.event.workflow_run.conclusion == 'success'
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
         runs-on: ubuntu-latest
-
         environment: dev
 
         steps:
@@ -38,10 +36,8 @@ jobs:
                   app-name: evfleet-function-dev
                   package: ./cloud/functions_app
 
-                  - name: Verify Azure Function exists
-
-                  
-  run: |
-    az functionapp show \
-      --name evfleet-function-dev \
-      --resource-group rg-evfleet-dev
+            - name: Verify Azure Function exists
+              run: |
+                  az functionapp show \
+                    --name evfleet-function-dev \
+                    --resource-group rg-evfleet-dev
