@@ -1,47 +1,17 @@
-name: "CodeQL"
+version: 2
 
-on:
-    push:
-        branches:
-            - main
-    pull_request:
-        branches:
-            - main
-    schedule:
-        - cron: "0 3 * * 0"
+updates:
+    - package-ecosystem: "pip"
+      directory: "/"
+      schedule:
+          interval: "weekly"
 
-permissions:
-    actions: read
-    contents: read
-    security-events: write
+    - package-ecosystem: "github-actions"
+      directory: "/"
+      schedule:
+          interval: "weekly"
 
-jobs:
-    analyze:
-        name: Analyze Python
-        runs-on: ubuntu-latest
-
-        permissions:
-            actions: read
-            contents: read
-            security-events: write
-
-        strategy:
-            fail-fast: false
-            matrix:
-                language:
-                    - python
-
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-
-            - name: Initialize CodeQL
-              uses: github/codeql-action/init@v3
-              with:
-                  languages: ${{ matrix.language }}
-
-            - name: Autobuild
-              uses: github/codeql-action/autobuild@v3
-
-            - name: Perform CodeQL Analysis
-              uses: github/codeql-action/analyze@v3
+    - package-ecosystem: "terraform"
+      directory: "/infrastructure/environments/dev"
+      schedule:
+          interval: "weekly"

@@ -44,7 +44,7 @@ class CosmosService:
 
         start = time.time()
 
-        result = CosmosService._container.upsert_item(telemetry)
+        CosmosService._container.upsert_item(telemetry)
 
         cosmos_duration = round((time.time() - start) * 1000, 2)
 

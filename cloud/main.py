@@ -45,6 +45,8 @@ def on_message(client, userdata, msg):
 
     try:
 
+        payload = msg.payload.decode("utf-8")
+
         logging.info("Telemetry received from MQTT")
         iot_connector.send_telemetry(payload)
         logging.info("Telemetry sent to Azure IoT Hub")
