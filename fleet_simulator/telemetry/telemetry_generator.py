@@ -9,7 +9,7 @@ class TelemetryGenerator:
         """Apply the vehicle's current scenario."""
 
         if vehicle.scenario == Scenario.NORMAL_DRIVING:
-            
+
             vehicle.change_state("DRIVING")
 
         elif vehicle.scenario == Scenario.FAST_CHARGING:
