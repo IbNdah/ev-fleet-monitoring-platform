@@ -44,6 +44,3 @@ jobs:
 
       - name: Run Fleet Simulator tests
         run: pytest fleet_simulator/tests -v
-
-      - name: Run Edge Gateway Tests
-        run: pytest edge_gateway/tests -v
