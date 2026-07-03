@@ -41,7 +41,7 @@ app = func.FunctionApp()
 )
 def process_telemetry(event: func.EventHubEvent):
 
-    logger.info("######## VERSION 7.3 ########")
+    logger.info("######## VERSION 7.4 ########")
 
     correlation_id = str(uuid.uuid4())
     function_start = time.perf_counter()
