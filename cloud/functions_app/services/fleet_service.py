@@ -26,13 +26,23 @@ class FleetService:
     def __init__(self):
         self.cosmos = CosmosService()
 
-    def get_summary(self):
+    def _get_latest_fleet(self):
+        """
+        Retrieve the latest telemetry document for each vehicle.
+
+        Returns:
+            list: Latest telemetry documents, one per vehicle.
+        """
+
+        # ------------------------------------------------------------------
+        # Retrieve all telemetry documents from Cosmos DB
+        # ------------------------------------------------------------------
 
         telemetry = self.cosmos.get_fleet_summary()
         logger.info(json.dumps(telemetry, indent=4))
 
         if not telemetry:
-            return {}
+            return []
 
         # ------------------------------------------------------------------
         # Keep only the latest telemetry for each vehicle
@@ -43,27 +53,41 @@ class FleetService:
         for item in telemetry:
 
             vehicle_id = item.get("vehicleId")
+
+            # Skip legacy or invalid documents
             if not vehicle_id:
-                logger.warning("Ignoring document without vehicleId (id=%s)", item.get("id"))
+                logger.warning(
+                    "Ignoring document without vehicleId (id=%s)",
+                    item.get("id"),
+                )
                 continue
 
-            if not latest.get(vehicle_id):
-                latest[vehicle_id] = item
-                continue
-
+            # Keep the most recent telemetry document
             if (
-                item["processedTimestamp"]
-                > latest[vehicle_id]["processedTimestamp"]
+                vehicle_id not in latest
+                or item["processedTimestamp"] > latest[vehicle_id]["processedTimestamp"]
             ):
                 latest[vehicle_id] = item
 
         fleet = list(latest.values())
 
-        total = len(fleet)
-        
-        if total == 0:
+        # ------------------------------------------------------------------
+        # Validate the resulting fleet
+        # ------------------------------------------------------------------
+
+        if not fleet:
             logger.warning("No valid telemetry data found for any vehicle")
+
+        return fleet
+
+    def get_summary(self):
+
+        fleet = self._get_latest_fleet()
+
+        if not fleet:
             return {}
+
+        total = len(fleet)
 
         driving = sum(
             1

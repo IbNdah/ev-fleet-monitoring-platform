@@ -127,7 +127,7 @@ def process_telemetry(event: func.EventHubEvent):
 @app.route(
     route="fleet/summary",
     methods=["GET"],
-    auth_level=func.AuthLevel.FUNCTION,
+    auth_level=func.AuthLevel.ANONYMOUS,
 )
 def fleet_summary(req: func.HttpRequest) -> func.HttpResponse:
 
