@@ -82,9 +82,9 @@ class FleetService:
 
         latest = {}
 
-   # ------------------------------------------------------------------
-   # Keep only the latest telemetry for each vehicle
-   # ------------------------------------------------------------------
+        # ------------------------------------------------------------------
+        # Keep only the latest telemetry for each vehicle
+        # ------------------------------------------------------------------
 
         for item in telemetry:
 
@@ -99,17 +99,14 @@ class FleetService:
 
             if (
                 vehicle_id not in latest
-                or item["processedTimestamp"]
-                > latest[vehicle_id]["processedTimestamp"]
+                or item["processedTimestamp"] > latest[vehicle_id]["processedTimestamp"]
             ):
                 latest[vehicle_id] = item
 
         fleet = list(latest.values())
 
         if not fleet:
-            logger.warning(
-                "No valid telemetry data found for any vehicle"
-            )
+            logger.warning("No valid telemetry data found for any vehicle")
 
         return fleet
 
@@ -133,51 +130,31 @@ class FleetService:
 
         total = len(fleet)
 
-        driving = sum(
-            1
-            for vehicle in fleet
-            if vehicle["vehicleState"] == "DRIVING"
-        )
+        driving = sum(1 for vehicle in fleet if vehicle["vehicleState"] == "DRIVING")
 
-        charging = sum(
-            1
-            for vehicle in fleet
-            if vehicle["batteryState"] == "CHARGING"
-        )
+        charging = sum(1 for vehicle in fleet if vehicle["batteryState"] == "CHARGING")
 
-        parked = sum(
-            1
-            for vehicle in fleet
-            if vehicle["vehicleState"] == "PARKED"
-        )
+        parked = sum(1 for vehicle in fleet if vehicle["vehicleState"] == "PARKED")
 
-        fault = sum(
-            1
-            for vehicle in fleet
-            if vehicle["faultCode"] is not None
-        )
+        fault = sum(1 for vehicle in fleet if vehicle["faultCode"] is not None)
 
         average_soc = round(
-            sum(vehicle["batterySoc"] for vehicle in fleet)
-            / total,
+            sum(vehicle["batterySoc"] for vehicle in fleet) / total,
             2,
         )
 
         average_temperature = round(
-            sum(vehicle["batteryTemperature"] for vehicle in fleet)
-            / total,
+            sum(vehicle["batteryTemperature"] for vehicle in fleet) / total,
             2,
         )
 
         average_voltage = round(
-            sum(vehicle["batteryVoltage"] for vehicle in fleet)
-            / total,
+            sum(vehicle["batteryVoltage"] for vehicle in fleet) / total,
             2,
         )
 
         average_current = round(
-            sum(vehicle["batteryCurrent"] for vehicle in fleet)
-            / total,
+            sum(vehicle["batteryCurrent"] for vehicle in fleet) / total,
             2,
         )
 
@@ -250,8 +227,7 @@ class FleetService:
         """
 
         return self.get_summary()
-    
-    
+
     # ------------------------------------------------------------------
     # Dashboard Vehicles
     # ------------------------------------------------------------------
@@ -263,18 +239,17 @@ class FleetService:
         fleet = self._get_latest_fleet()
         return [
             {
-            "vehicle": vehicle["vehicleId"],
-            "soc": vehicle["batterySoc"],
-            "temperature": vehicle["batteryTemperature"],
-            "voltage": vehicle["batteryVoltage"],
-            "current": vehicle["batteryCurrent"],
-            "state": vehicle["vehicleState"],
-            "fault": vehicle["faultCode"] or "-",
-        }
-        for vehicle in fleet
-    ]
-        
-        
+                "vehicle": vehicle["vehicleId"],
+                "soc": vehicle["batterySoc"],
+                "temperature": vehicle["batteryTemperature"],
+                "voltage": vehicle["batteryVoltage"],
+                "current": vehicle["batteryCurrent"],
+                "state": vehicle["vehicleState"],
+                "fault": vehicle["faultCode"] or "-",
+            }
+            for vehicle in fleet
+        ]
+
     # ------------------------------------------------------------------
     # Dashboard Trends
     # ------------------------------------------------------------------
@@ -314,26 +289,17 @@ class FleetService:
 
         for item in telemetry:
 
-            timestamp = datetime.fromisoformat(
-                item["processedTimestamp"]
-            )
+            timestamp = datetime.fromisoformat(item["processedTimestamp"])
 
             bucket = timestamp.replace(
-                second=(
-                    timestamp.second
-                    // TREND_BUCKET_SECONDS
-                )
+                second=(timestamp.second // TREND_BUCKET_SECONDS)
                 * TREND_BUCKET_SECONDS,
                 microsecond=0,
             )
 
-            buckets[bucket]["soc"].append(
-                item["batterySoc"]
-            )
+            buckets[bucket]["soc"].append(item["batterySoc"])
 
-            buckets[bucket]["temperature"].append(
-                item["batteryTemperature"]
-            )
+            buckets[bucket]["temperature"].append(item["batteryTemperature"])
 
         # --------------------------------------------------------------
         # Calculate fleet averages
@@ -348,9 +314,7 @@ class FleetService:
 
             trends.append(
                 {
-                    "timestamp": bucket.strftime(
-                        "%Y-%m-%dT%H:%M:%SZ"
-                    ),
+                    "timestamp": bucket.strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "vehicle_count": len(soc),
                     "average_soc": round(
                         sum(soc) / len(soc),

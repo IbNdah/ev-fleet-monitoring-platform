@@ -15,10 +15,8 @@ CONTAINER_NAME = "telemetry"
 
 client = CosmosClient(COSMOS_ENDPOINT, credential=COSMOS_KEY)
 
-container = (
-    client
-    .get_database_client(DATABASE_NAME)
-    .get_container_client(CONTAINER_NAME)
+container = client.get_database_client(DATABASE_NAME).get_container_client(
+    CONTAINER_NAME
 )
 
 print("\n==============================")
@@ -31,12 +29,7 @@ FROM c
 ORDER BY c._ts DESC
 """
 
-items = list(
-    container.query_items(
-        query=query,
-        enable_cross_partition_query=True
-    )
-)
+items = list(container.query_items(query=query, enable_cross_partition_query=True))
 
 print(f"Documents loaded : {len(items)}")
 

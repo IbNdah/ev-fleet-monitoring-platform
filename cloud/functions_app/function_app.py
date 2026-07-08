@@ -16,9 +16,7 @@ from services.fleet_service import FleetService
 connection_string = os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
 
 if connection_string:
-    configure_azure_monitor(
-        connection_string=connection_string
-    )
+    configure_azure_monitor(connection_string=connection_string)
 
 # -----------------------------------------------------------------------------
 # Logging
@@ -33,6 +31,7 @@ app = func.FunctionApp()
 # -----------------------------------------------------------------------------
 # Event Hub Trigger
 # -----------------------------------------------------------------------------
+
 
 @app.event_hub_message_trigger(
     arg_name="event",
@@ -118,11 +117,12 @@ def process_telemetry(event: func.EventHubEvent):
         )
 
         raise
-    
+
 
 # -----------------------------------------------------------------------------
 # Fleet Summary API
 # -----------------------------------------------------------------------------
+
 
 @app.route(
     route="fleet/summary",
@@ -153,17 +153,18 @@ def fleet_summary(req: func.HttpRequest) -> func.HttpResponse:
             "Internal Server Error",
             status_code=500,
         )
-        
+
+
 # -----------------------------------------------------------------------------
 # Dashboard Vehicles API
 # -----------------------------------------------------------------------------
+
 
 @app.route(
     route="dashboard/vehicles",
     methods=["GET"],
     auth_level=func.AuthLevel.ANONYMOUS,
 )
-
 def dashboard_vehicles(req: func.HttpRequest) -> func.HttpResponse:
 
     logger.info("Dashboard Vehicles API called")
@@ -188,18 +189,18 @@ def dashboard_vehicles(req: func.HttpRequest) -> func.HttpResponse:
             "Internal Server Error",
             status_code=500,
         )
-        
-        
+
+
 # -----------------------------------------------------------------------------
 # Dashboard Trends API
 # -----------------------------------------------------------------------------
+
 
 @app.route(
     route="dashboard/trends",
     methods=["GET"],
     auth_level=func.AuthLevel.ANONYMOUS,
 )
-
 def dashboard_trends(req: func.HttpRequest) -> func.HttpResponse:
 
     logger.info("Dashboard Trends API called")

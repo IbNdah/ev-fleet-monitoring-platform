@@ -29,9 +29,7 @@ class CosmosService:
             )
 
             CosmosService._database = (
-                CosmosService._client.create_database_if_not_exists(
-                    id="fleetdb"
-                )
+                CosmosService._client.create_database_if_not_exists(id="fleetdb")
             )
 
             CosmosService._container = (
@@ -47,9 +45,7 @@ class CosmosService:
             telemetry["id"] = str(uuid.uuid4())
 
         if "processedTimestamp" not in telemetry:
-            telemetry["processedTimestamp"] = (
-                datetime.now(timezone.utc).isoformat()
-            )
+            telemetry["processedTimestamp"] = datetime.now(timezone.utc).isoformat()
 
         start = time.time()
 
@@ -89,17 +85,17 @@ class CosmosService:
         )
 
         return items
-    
+
     def get_telemetry_history(self):
         """
         Returns the complete telemetry history ordered by timestamp.
-        
+
         Returns:
             list[dict]: Telemetry documents ordered by processedTimestamp.
         """
-    # ----------------------------------------------------------------------------- 
-    # Retrieve telemetry history ordered by processedTimestamp
-    # -----------------------------------------------------------------------------
+        # -----------------------------------------------------------------------------
+        # Retrieve telemetry history ordered by processedTimestamp
+        # -----------------------------------------------------------------------------
 
         query = """
         SELECT
@@ -110,17 +106,14 @@ class CosmosService:
         FROM c
         ORDER BY c.processedTimestamp DESC
         """
-        
+
         items = list(
             CosmosService._container.query_items(
                 query=query,
                 enable_cross_partition_query=True,
             )
         )
-        
-        logger.info(
-            "Retrieved %s telemetry documents from Cosmos DB", 
-            len(items)
-        )
-             
+
+        logger.info("Retrieved %s telemetry documents from Cosmos DB", len(items))
+
         return items
