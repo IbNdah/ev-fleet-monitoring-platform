@@ -1,7 +1,7 @@
-from asyncio.log import logger
 import logging
 import time
 import uuid
+from asyncio.log import logger
 from datetime import datetime, timezone
 
 from azure.cosmos import CosmosClient, PartitionKey

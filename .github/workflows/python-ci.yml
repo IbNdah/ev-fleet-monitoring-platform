@@ -33,11 +33,11 @@ jobs:
         run: |
           pip install -r requirements-dev.txt
 
-      - name: Check formatting
-        run: black --check .
-
       - name: Check import order
         run: isort . --check-only
+
+      - name: Check formatting
+        run: black --check .
 
       - name: Lint code
         run: flake8 .

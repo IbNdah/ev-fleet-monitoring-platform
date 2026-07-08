@@ -1,9 +1,9 @@
-from dataclasses import asdict, dataclass
 import json
 import logging
-
 from collections import defaultdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
+
 from services.cosmos_service import CosmosService
 
 logger = logging.getLogger("evfleet")

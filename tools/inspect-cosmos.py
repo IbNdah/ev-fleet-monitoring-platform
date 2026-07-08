@@ -1,9 +1,9 @@
 import json
+import os
 from collections import Counter
 
 from azure.cosmos import CosmosClient
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
 
