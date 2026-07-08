@@ -1,3 +1,4 @@
+from asyncio.log import logger
 import logging
 import time
 import uuid
@@ -87,4 +88,39 @@ class CosmosService:
             )
         )
 
+        return items
+    
+    def get_telemetry_history(self):
+        """
+        Returns the complete telemetry history ordered by timestamp.
+        
+        Returns:
+            list[dict]: Telemetry documents ordered by processedTimestamp.
+        """
+    # ----------------------------------------------------------------------------- 
+    # Retrieve telemetry history ordered by processedTimestamp
+    # -----------------------------------------------------------------------------
+
+        query = """
+        SELECT
+            c.vehicleId,
+            c.batterySoc,
+            c.batteryTemperature,
+            c.processedTimestamp
+        FROM c
+        ORDER BY c.processedTimestamp DESC
+        """
+        
+        items = list(
+            CosmosService._container.query_items(
+                query=query,
+                enable_cross_partition_query=True,
+            )
+        )
+        
+        logger.info(
+            "Retrieved %s telemetry documents from Cosmos DB", 
+            len(items)
+        )
+             
         return items

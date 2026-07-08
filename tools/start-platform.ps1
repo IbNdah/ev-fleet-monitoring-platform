@@ -20,14 +20,12 @@ Write-Host ""
 # Environment Validation
 # ------------------------------------------------------------
 
-if (!(Test-Path $Venv))
-{
+if (!(Test-Path $Venv)) {
     Write-Host "[ERROR] Virtual Environment not found." -ForegroundColor Red
     exit
 }
 
-if (!(Test-Path $Functions))
-{
+if (!(Test-Path $Functions)) {
     Write-Host "[ERROR] Azure Functions project not found." -ForegroundColor Red
     exit
 }
@@ -38,18 +36,16 @@ if (!(Test-Path $Functions))
 
 Write-Host "[1/4] Starting Mosquitto..." -ForegroundColor Yellow
 
-if (Get-Process mosquitto -ErrorAction SilentlyContinue)
-{
+if (Get-Process mosquitto -ErrorAction SilentlyContinue) {
     Write-Host "    [OK] Mosquitto already running." -ForegroundColor Green
 }
-else
-{
+else {
     Start-Process powershell `
         -ArgumentList @(
-            "-NoExit",
-            "-Command",
-            "mosquitto -v"
-        )
+        "-NoExit",
+        "-Command",
+        "mosquitto -v"
+    )
 
     Start-Sleep 2
 
@@ -64,22 +60,20 @@ Write-Host ""
 
 Write-Host "[2/4] Starting Azure Functions..." -ForegroundColor Yellow
 
-if (Get-Process func -ErrorAction SilentlyContinue)
-{
+if (Get-Process func -ErrorAction SilentlyContinue) {
     Write-Host "    [OK] Azure Functions already running." -ForegroundColor Green
 }
-else
-{
+else {
     Start-Process powershell `
         -ArgumentList @(
-            "-NoExit",
-            "-Command",
-@"
+        "-NoExit",
+        "-Command",
+        @"
 Set-Location "$Functions"
 & "$Venv"
 func start
 "@
-        )
+    )
 
     Start-Sleep 5
 
@@ -96,9 +90,9 @@ Write-Host "[3/4] Starting Edge Gateway..." -ForegroundColor Yellow
 
 Start-Process powershell `
     -ArgumentList @(
-        "-NoExit",
-        "-Command",
-@"
+    "-NoExit",
+    "-Command",
+    @"
 Set-Location "$Root"
 & "$Venv"
 python -m edge_gateway.gateway
@@ -118,9 +112,9 @@ Write-Host "[4/4] Starting Fleet Simulator..." -ForegroundColor Yellow
 
 Start-Process powershell `
     -ArgumentList @(
-        "-NoExit",
-        "-Command",
-@"
+    "-NoExit",
+    "-Command",
+    @"
 Set-Location "$Root"
 & "$Venv"
 python -m fleet_simulator.main
@@ -149,11 +143,43 @@ Write-Host "  [OK] Edge Gateway" -ForegroundColor Green
 Write-Host "  [OK] Fleet Simulator" -ForegroundColor Green
 Write-Host ""
 
+Write-Host "Architecture" -ForegroundColor Cyan
+Write-Host "           ------------" -ForegroundColor Cyan
+Write-Host "           Fleet Simulator"
+Write-Host "              |"
+Write-Host "              v"
+Write-Host "           MQTT Broker"
+Write-Host "              |"
+Write-Host "              v"
+Write-Host "           Edge Gateway"
+Write-Host "              |"
+Write-Host "              v"
+Write-Host "           Azure IoT Hub"
+Write-Host "              |"
+Write-Host "              v"
+Write-Host "           Azure Functions"
+Write-Host "              |"
+Write-Host "              v"
+Write-Host "           Cosmos DB"
+Write-Host "              |"
+Write-Host "              v"
+Write-Host "           Grafana"
+Write-Host ""
+
 Write-Host "Endpoints" -ForegroundColor Cyan
 Write-Host "---------" -ForegroundColor Cyan
-Write-Host "  Azure Functions : http://localhost:7071"
-Write-Host "  Fleet Summary   : http://localhost:7071/api/fleet/summary"
-Write-Host "  Grafana         : http://localhost:3000"
+Write-Host ""
+Write-Host "  Azure Functions      : http://localhost:7071"
+Write-Host "------------------------------------" -ForegroundColor Cyan
+Write-Host "REST APIs Endpoints"
+Write-Host "------------------------------------" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "  Fleet Summary API    : api/fleet/summary"
+Write-Host "  Dashboard Vehicles   : api/dashboard/vehicles"
+Write-Host "  Dashboard Trends     : api/dashboard/trends"
+Write-Host ""
+Write-Host "------------------------------------" -ForegroundColor Cyan
+Write-Host "  Grafana Dashboard    : http://localhost:3000"
 Write-Host ""
 
 Write-Host "Platform started successfully." -ForegroundColor Green

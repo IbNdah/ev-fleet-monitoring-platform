@@ -41,7 +41,7 @@ app = func.FunctionApp()
 )
 def process_telemetry(event: func.EventHubEvent):
 
-    logger.info("######## VERSION 7.4 ########")
+    logger.info("######## VERSION 7.5 ########")
 
     correlation_id = str(uuid.uuid4())
     function_start = time.perf_counter()
@@ -148,6 +148,77 @@ def fleet_summary(req: func.HttpRequest) -> func.HttpResponse:
     except Exception:
 
         logger.exception("Fleet Summary API failed")
+
+        return func.HttpResponse(
+            "Internal Server Error",
+            status_code=500,
+        )
+        
+# -----------------------------------------------------------------------------
+# Dashboard Vehicles API
+# -----------------------------------------------------------------------------
+
+@app.route(
+    route="dashboard/vehicles",
+    methods=["GET"],
+    auth_level=func.AuthLevel.ANONYMOUS,
+)
+
+def dashboard_vehicles(req: func.HttpRequest) -> func.HttpResponse:
+
+    logger.info("Dashboard Vehicles API called")
+
+    try:
+
+        fleet = FleetService()
+
+        data = fleet.get_vehicles()
+
+        return func.HttpResponse(
+            json.dumps(data, indent=4),
+            mimetype="application/json",
+            status_code=200,
+        )
+
+    except Exception:
+
+        logger.exception("Dashboard Vehicles API failed")
+
+        return func.HttpResponse(
+            "Internal Server Error",
+            status_code=500,
+        )
+        
+        
+# -----------------------------------------------------------------------------
+# Dashboard Trends API
+# -----------------------------------------------------------------------------
+
+@app.route(
+    route="dashboard/trends",
+    methods=["GET"],
+    auth_level=func.AuthLevel.ANONYMOUS,
+)
+
+def dashboard_trends(req: func.HttpRequest) -> func.HttpResponse:
+
+    logger.info("Dashboard Trends API called")
+
+    try:
+
+        fleet = FleetService()
+
+        data = fleet.get_trends()
+
+        return func.HttpResponse(
+            json.dumps(data, indent=4),
+            mimetype="application/json",
+            status_code=200,
+        )
+
+    except Exception:
+
+        logger.exception("Dashboard Trends API failed")
 
         return func.HttpResponse(
             "Internal Server Error",
