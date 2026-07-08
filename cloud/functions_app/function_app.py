@@ -40,7 +40,7 @@ app = func.FunctionApp()
 )
 def process_telemetry(event: func.EventHubEvent):
 
-    logger.info("######## VERSION 7.5 ########")
+    logger.info("########_ VERSION 7.5.4 _########")
 
     correlation_id = str(uuid.uuid4())
     function_start = time.perf_counter()
@@ -145,12 +145,12 @@ def fleet_summary(req: func.HttpRequest) -> func.HttpResponse:
             status_code=200,
         )
 
-    except Exception:
+    except Exception as ex:
 
         logger.exception("Fleet Summary API failed")
 
         return func.HttpResponse(
-            "Internal Server Error",
+            str(ex),
             status_code=500,
         )
 
@@ -223,5 +223,36 @@ def dashboard_trends(req: func.HttpRequest) -> func.HttpResponse:
 
         return func.HttpResponse(
             "Internal Server Error",
+            status_code=500,
+        )
+
+
+@app.route(
+    route="dashboard/status",
+    methods=["GET"],
+    auth_level=func.AuthLevel.ANONYMOUS,
+)
+def dashboard_status(req: func.HttpRequest) -> func.HttpResponse:
+
+    logger.info("Dashboard Status API called")
+
+    try:
+
+        fleet = FleetService()
+
+        data = fleet.get_dashboard_status()
+
+        return func.HttpResponse(
+            json.dumps(data, indent=4),
+            mimetype="application/json",
+            status_code=200,
+        )
+
+    except Exception as ex:
+
+        logger.exception("Dashboard Status API failed")
+
+        return func.HttpResponse(
+            str(ex),
             status_code=500,
         )

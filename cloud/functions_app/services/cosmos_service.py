@@ -104,6 +104,10 @@ class CosmosService:
             c.batteryTemperature,
             c.processedTimestamp
         FROM c
+        WHERE
+        IS_DEFINED(c.batterySoc)
+        AND IS_DEFINED(c.batteryTemperature)
+        AND IS_DEFINED(c.processedTimestamp)
         ORDER BY c.processedTimestamp DESC
         """
 

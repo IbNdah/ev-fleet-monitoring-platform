@@ -14,6 +14,8 @@ logger = logging.getLogger("evfleet")
 # ------------------------------------------------------------------
 
 TREND_BUCKET_SECONDS = 5
+API_VERSION = "7.5.4"
+BUILD_VERSION = "2026.07.08"
 
 
 # ------------------------------------------------------------------
@@ -50,6 +52,23 @@ class FleetStatistics:
     average_temperature: float
     average_voltage: float
     average_current: float
+
+
+@dataclass
+class DashboardStatus:
+    """
+    Dashboard metadata exposed to Grafana.
+
+    This DTO contains platform-level information rather than fleet
+    telemetry. Keeping it separated from FleetSummary makes the REST API
+    easier to evolve without impacting dashboard consumers.
+    """
+
+    last_update: str
+    api_version: str
+    build_version: str
+    simulator_status: str
+    edge_gateway_status: str
 
 
 # ------------------------------------------------------------------
@@ -333,3 +352,38 @@ class FleetService:
         )
 
         return trends
+
+    # ------------------------------------------------------------------
+    # Dashboard Status
+    # ------------------------------------------------------------------
+
+    def get_dashboard_status(self):
+        """
+        Return platform status consumed by Grafana.
+
+        The endpoint intentionally exposes deployment metadata separately
+        from telemetry metrics. This mirrors the design of production
+        monitoring platforms where operational metadata and business data
+        are independent concerns.
+        """
+
+        fleet = self._get_latest_fleet()
+
+        if fleet:
+            last_update = max(v["processedTimestamp"] for v in fleet)
+            simulator_status = "LIVE"
+            edge_gateway_status = "CONNECTED"
+        else:
+            last_update = "-"
+            simulator_status = "OFFLINE"
+            edge_gateway_status = "OFFLINE"
+
+        status = DashboardStatus(
+            last_update=last_update,
+            api_version=API_VERSION,
+            build_version=BUILD_VERSION,
+            simulator_status=simulator_status,
+            edge_gateway_status=edge_gateway_status,
+        )
+
+        return asdict(status)
