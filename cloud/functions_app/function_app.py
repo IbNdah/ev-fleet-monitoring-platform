@@ -3,6 +3,7 @@ import logging
 import os
 import time
 import uuid
+from typing import Any
 
 import azure.functions as func
 from azure.monitor.opentelemetry import configure_azure_monitor
@@ -27,6 +28,44 @@ logger.setLevel(logging.INFO)
 
 app = func.FunctionApp()
 
+# -----------------------------------------------------------------------------
+# HTTP Response Helpers
+# -----------------------------------------------------------------------------
+
+
+def json_response(data: Any, status_code: int = 200) -> func.HttpResponse:
+    """
+    Return a standardized JSON HTTP response.
+
+    Architectural rationale
+    -----------------------
+    Centralizes JSON serialization and guarantees that every REST endpoint
+    exposes a consistent response contract.
+    """
+
+    return func.HttpResponse(
+        json.dumps(data, indent=4),
+        mimetype="application/json",
+        status_code=status_code,
+    )
+
+
+def error_response(ex: Exception, status_code: int = 500) -> func.HttpResponse:
+    """
+    Return a standardized JSON error response.
+
+    Keeping error payloads consistent simplifies debugging and enables
+    future REST consumers to process failures programmatically.
+    """
+
+    return json_response(
+        {
+            "error": str(ex),
+            "status": status_code,
+        },
+        status_code=status_code,
+    )
+
 
 # -----------------------------------------------------------------------------
 # Event Hub Trigger
@@ -40,7 +79,7 @@ app = func.FunctionApp()
 )
 def process_telemetry(event: func.EventHubEvent):
 
-    logger.info("########_ VERSION 7.5.4 _########")
+    logger.info("########_ VERSION 7.5.5 _########")
 
     correlation_id = str(uuid.uuid4())
     function_start = time.perf_counter()
@@ -49,7 +88,6 @@ def process_telemetry(event: func.EventHubEvent):
     payload = {}
 
     try:
-
         raw_payload = event.get_body().decode("utf-8")
         payload = json.loads(raw_payload)
 
@@ -122,8 +160,6 @@ def process_telemetry(event: func.EventHubEvent):
 # -----------------------------------------------------------------------------
 # Fleet Summary API
 # -----------------------------------------------------------------------------
-
-
 @app.route(
     route="fleet/summary",
     methods=["GET"],
@@ -134,32 +170,20 @@ def fleet_summary(req: func.HttpRequest) -> func.HttpResponse:
     logger.info("Fleet Summary API called")
 
     try:
-
         fleet = FleetService()
-
         data = fleet.get_summary()
 
-        return func.HttpResponse(
-            json.dumps(data, indent=4),
-            mimetype="application/json",
-            status_code=200,
-        )
+        return json_response([data])
 
     except Exception as ex:
-
         logger.exception("Fleet Summary API failed")
 
-        return func.HttpResponse(
-            str(ex),
-            status_code=500,
-        )
+        return error_response(ex)
 
 
 # -----------------------------------------------------------------------------
 # Dashboard Vehicles API
 # -----------------------------------------------------------------------------
-
-
 @app.route(
     route="dashboard/vehicles",
     methods=["GET"],
@@ -170,32 +194,20 @@ def dashboard_vehicles(req: func.HttpRequest) -> func.HttpResponse:
     logger.info("Dashboard Vehicles API called")
 
     try:
-
         fleet = FleetService()
-
         data = fleet.get_vehicles()
 
-        return func.HttpResponse(
-            json.dumps(data, indent=4),
-            mimetype="application/json",
-            status_code=200,
-        )
+        return json_response(data)
 
-    except Exception:
-
+    except Exception as ex:
         logger.exception("Dashboard Vehicles API failed")
 
-        return func.HttpResponse(
-            "Internal Server Error",
-            status_code=500,
-        )
+        return error_response(ex)
 
 
 # -----------------------------------------------------------------------------
 # Dashboard Trends API
 # -----------------------------------------------------------------------------
-
-
 @app.route(
     route="dashboard/trends",
     methods=["GET"],
@@ -206,27 +218,20 @@ def dashboard_trends(req: func.HttpRequest) -> func.HttpResponse:
     logger.info("Dashboard Trends API called")
 
     try:
-
         fleet = FleetService()
-
         data = fleet.get_trends()
 
-        return func.HttpResponse(
-            json.dumps(data, indent=4),
-            mimetype="application/json",
-            status_code=200,
-        )
+        return json_response(data)
 
-    except Exception:
-
+    except Exception as ex:
         logger.exception("Dashboard Trends API failed")
 
-        return func.HttpResponse(
-            "Internal Server Error",
-            status_code=500,
-        )
+        return error_response(ex)
 
 
+# -----------------------------------------------------------------------------
+# Dashboard Status API
+# -----------------------------------------------------------------------------
 @app.route(
     route="dashboard/status",
     methods=["GET"],
@@ -237,22 +242,12 @@ def dashboard_status(req: func.HttpRequest) -> func.HttpResponse:
     logger.info("Dashboard Status API called")
 
     try:
-
         fleet = FleetService()
-
         data = fleet.get_dashboard_status()
 
-        return func.HttpResponse(
-            json.dumps(data, indent=4),
-            mimetype="application/json",
-            status_code=200,
-        )
+        return json_response([data])
 
     except Exception as ex:
-
         logger.exception("Dashboard Status API failed")
 
-        return func.HttpResponse(
-            str(ex),
-            status_code=500,
-        )
+        return error_response(ex)
