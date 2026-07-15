@@ -6,16 +6,19 @@ class BatteryECU:
     """
     Simulates an EV Battery ECU.
 
-    Features:
-    - Driving cycles
-    - Parking cycles
-    - Automatic charging
-    - Temperature management
-    - Thermal protection
-    - Overheat fault recovery
+    Responsibilities
+    ----------------
+    - Simulate realistic battery behaviour
+    - Handle charging/discharging cycles
+    - Manage thermal behaviour
+    - Detect and recover from overheating
+
+    The BatteryECU does NOT decide vehicle behaviour.
+    It only applies the operating profile assigned by the
+    FleetScenarioEngine.
     """
 
-    def __init__(self, device_id):
+    def __init__(self, device_id: str):
 
         self.device_id = device_id
 
@@ -29,7 +32,27 @@ class BatteryECU:
         self.state = "PARKED"
         self.fault_code = None
 
-    def update(self):
+    # ---------------------------------------------------------
+    # Physics Engine
+    # ---------------------------------------------------------
+
+    def update(self, profile):
+        """
+        Execute one physical simulation cycle.
+        """
+        # Apply operating profile
+        self.state = profile.vehicle_state
+
+        if profile.max_soc is not None:
+            self.soc = min(self.soc, profile.max_soc)
+
+        if profile.min_temperature is not None:
+            self.temperature = max(
+                self.temperature,
+                profile.min_temperature,
+            )
+
+        self.fault_code = profile.fault_code
 
         # Small voltage variation
         self.voltage += random.uniform(-0.02, 0.02)
@@ -45,7 +68,6 @@ class BatteryECU:
             # Active cooling
             self.temperature -= random.uniform(1.0, 3.0)
 
-            # Recover after cooling
             if self.temperature <= 55:
 
                 self.state = "PARKED"
@@ -57,79 +79,96 @@ class BatteryECU:
 
         else:
 
-            # Low battery -> charging
-
+            # Automatic charging
             if self.soc <= 15:
 
                 self.state = "CHARGING"
 
-            # Random transitions
-
             elif random.random() < 0.05:
 
-                self.state = random.choice(["DRIVING", "PARKED"])
+                self.state = random.choice(
+                    [
+                        "DRIVING",
+                        "PARKED",
+                    ]
+                )
 
-            # -----------------------------------------
-            # DRIVING
-            # -----------------------------------------
+            # ---------------------------------------------
+            # Driving
+            # ---------------------------------------------
 
             if self.state == "DRIVING":
 
                 self.soc -= random.uniform(0.5, 2.0)
 
-                self.temperature += random.uniform(0.3, 1.0)
+                self.temperature += random.uniform(
+                    0.3,
+                    1.0,
+                )
 
-                self.current = random.uniform(20, 80)
-
-                # Thermal protection
+                self.current = random.uniform(
+                    20,
+                    80,
+                )
 
                 if self.temperature >= 55:
 
                     self.state = "PARKED"
 
-            # -----------------------------------------
-            # CHARGING
-            # -----------------------------------------
+            # ---------------------------------------------
+            # Charging
+            # ---------------------------------------------
 
             elif self.state == "CHARGING":
 
-                self.soc += random.uniform(2.0, 5.0)
+                self.soc += random.uniform(
+                    2.0,
+                    5.0,
+                )
 
-                self.temperature += random.uniform(-0.5, 0.3)
+                self.temperature += random.uniform(
+                    -0.5,
+                    0.3,
+                )
 
-                self.current = random.uniform(-40, -10)
+                self.current = random.uniform(
+                    -40,
+                    -10,
+                )
 
                 if self.soc >= 90:
 
                     self.state = "PARKED"
 
-            # -----------------------------------------
-            # PARKED
-            # -----------------------------------------
+            # ---------------------------------------------
+            # Parked
+            # ---------------------------------------------
 
             elif self.state == "PARKED":
 
                 self.current = random.uniform(-1, 1)
 
-                # Cooling while parked
-
                 if self.temperature > 35:
 
-                    self.temperature -= random.uniform(0.3, 1.0)
+                    self.temperature -= random.uniform(
+                        0.3,
+                        1.0,
+                    )
 
                 else:
 
-                    self.temperature += random.uniform(-0.2, 0.2)
-
-                # Resume driving
+                    self.temperature += random.uniform(
+                        -0.2,
+                        0.2,
+                    )
 
                 if self.temperature < 45 and random.random() < 0.05:
 
                     self.state = "DRIVING"
 
-            # -----------------------------------------
-            # Critical overheating
-            # -----------------------------------------
+            # ---------------------------------------------
+            # Thermal protection
+            # ---------------------------------------------
 
             if self.temperature > 70:
 
@@ -141,9 +180,7 @@ class BatteryECU:
         # ==================================================
 
         self.soc = max(0, min(100, self.soc))
-
         self.temperature = max(-20, min(80, self.temperature))
-
         self.voltage = max(3.0, min(4.2, self.voltage))
 
         # ==================================================
@@ -160,23 +197,3 @@ class BatteryECU:
             "faultCode": self.fault_code,
             "timestamp": datetime.now(UTC).isoformat(),
         }
-
-
-# -----------------------------------
-# Quick test
-# -----------------------------------
-
-if __name__ == "__main__":
-
-    battery = BatteryECU("EV-001")
-
-    for _ in range(100):
-
-        telemetry = battery.update()
-
-        print(
-            f"SOC={telemetry['soc']}% | "
-            f"State={telemetry['state']} | "
-            f"Temp={telemetry['temperature']}°C | "
-            f"Fault={telemetry['faultCode']}"
-        )

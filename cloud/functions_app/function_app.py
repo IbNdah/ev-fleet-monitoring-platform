@@ -79,7 +79,7 @@ def error_response(ex: Exception, status_code: int = 500) -> func.HttpResponse:
 )
 def process_telemetry(event: func.EventHubEvent):
 
-    logger.info("########_ VERSION 7.5.5 _########")
+    logger.info("########_ VERSION 8.0 _########")
 
     correlation_id = str(uuid.uuid4())
     function_start = time.perf_counter()
@@ -96,11 +96,14 @@ def process_telemetry(event: func.EventHubEvent):
         logger.info(
             "Telemetry received",
             extra={
-                "custom_dimensions": {
-                    "vehicleId": vehicle_id,
-                    "deviceId": payload.get("deviceId"),
-                    "correlationId": correlation_id,
-                }
+                "custom_dimensions": json.dumps(
+                    {
+                        "vehicleId": vehicle_id,
+                        "deviceId": payload.get("deviceId"),
+                        "correlationId": correlation_id,
+                    },
+                    ensure_ascii=False,
+                )
             },
         )
 
@@ -114,30 +117,36 @@ def process_telemetry(event: func.EventHubEvent):
         logger.info(
             "Telemetry processed",
             extra={
-                "custom_dimensions": {
-                    "vehicleId": vehicle_id,
-                    "deviceId": payload.get("deviceId"),
-                    "batteryState": payload.get("batteryState"),
-                    "batterySoc": payload.get("batterySoc"),
-                    "batteryTemperature": payload.get("batteryTemperature"),
-                    "batteryVoltage": payload.get("batteryVoltage"),
-                    "batteryCurrent": payload.get("batteryCurrent"),
-                    "cosmosDurationMs": cosmos_duration,
-                    "functionDurationMs": function_duration,
-                    "correlationId": correlation_id,
-                    "status": "SUCCESS",
-                }
+                "custom_dimensions": json.dumps(
+                    {
+                        "vehicleId": vehicle_id,
+                        "deviceId": payload.get("deviceId"),
+                        "batteryState": payload.get("batteryState"),
+                        "batterySoc": payload.get("batterySoc"),
+                        "batteryTemperature": payload.get("batteryTemperature"),
+                        "batteryVoltage": payload.get("batteryVoltage"),
+                        "batteryCurrent": payload.get("batteryCurrent"),
+                        "cosmosDurationMs": cosmos_duration,
+                        "functionDurationMs": function_duration,
+                        "correlationId": correlation_id,
+                        "status": "SUCCESS",
+                    },
+                    ensure_ascii=False,
+                )
             },
         )
 
         logger.info(
             "Telemetry persisted",
             extra={
-                "custom_dimensions": {
-                    "vehicleId": vehicle_id,
-                    "cosmosDurationMs": cosmos_duration,
-                    "correlationId": correlation_id,
-                }
+                "custom_dimensions": json.dumps(
+                    {
+                        "vehicleId": vehicle_id,
+                        "cosmosDurationMs": cosmos_duration,
+                        "correlationId": correlation_id,
+                    },
+                    ensure_ascii=False,
+                )
             },
         )
 
@@ -146,11 +155,14 @@ def process_telemetry(event: func.EventHubEvent):
         logger.exception(
             "Telemetry processing failed",
             extra={
-                "custom_dimensions": {
-                    "vehicleId": payload.get("vehicleId", "UNKNOWN"),
-                    "correlationId": correlation_id,
-                    "status": "FAILED",
-                }
+                "custom_dimensions": json.dumps(
+                    {
+                        "vehicleId": payload.get("vehicleId", "UNKNOWN"),
+                        "correlationId": correlation_id,
+                        "status": "FAILED",
+                    },
+                    ensure_ascii=False,
+                )
             },
         )
 

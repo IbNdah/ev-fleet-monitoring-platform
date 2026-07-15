@@ -168,17 +168,17 @@ Write-Host ""
 
 Write-Host "Endpoints" -ForegroundColor Cyan
 Write-Host "---------" -ForegroundColor Cyan
-Write-Host ""
 Write-Host "  Azure Functions      : http://localhost:7071"
-Write-Host "------------------------------------" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "--------------------------------------------------" -ForegroundColor Cyan
 Write-Host "REST APIs Endpoints"
-Write-Host "------------------------------------" -ForegroundColor Cyan
+Write-Host "--------------------------------------------------" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "  Fleet Summary API    : api/fleet/summary"
 Write-Host "  Dashboard Vehicles   : api/dashboard/vehicles"
 Write-Host "  Dashboard Trends     : api/dashboard/trends"
 Write-Host ""
-Write-Host "------------------------------------" -ForegroundColor Cyan
+Write-Host "--------------------------------------------------" -ForegroundColor Cyan
 Write-Host "  Grafana Dashboard    : http://localhost:3000"
 Write-Host ""
 

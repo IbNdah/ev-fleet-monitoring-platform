@@ -1,33 +1,35 @@
-from fleet_simulator.vehicles.vehicle import Vehicle
+from fleet_simulator.telemetry.vehicle_profiles import (
+    VehicleProfiles,
+)
+from fleet_simulator.vehicles.battery_ecu import BatteryECU
 
 
-def test_simulate_cycle():
-    """
-    Verify that a telemetry payload is generated and contains
-    the expected fields.
-    """
+def test_battery_limits():
 
-    vehicle = Vehicle("EV-001")
+    battery = BatteryECU("EV-001")
 
-    vehicle.change_state("DRIVING")
+    telemetry = battery.update(VehicleProfiles.DRIVING)
 
-    telemetry = vehicle.simulate_cycle()
+    assert 0 <= telemetry["soc"] <= 100
 
-    expected_keys = [
-        "deviceId",
-        "temperature",
-        "current",
-        "voltage",
-        "soc",
-        "state",
-        "faultCode",
-        "timestamp",
-        "vehicleId",
-        "vehicleState",
-    ]
+    assert -20 <= telemetry["temperature"] <= 80
 
-    for key in expected_keys:
-        assert key in telemetry
+    assert 3.0 <= telemetry["voltage"] <= 4.2
 
-    assert telemetry["vehicleId"] == "EV-001"
-    assert telemetry["vehicleState"] == "DRIVING"
+
+def test_low_battery_profile():
+
+    battery = BatteryECU("EV-001")
+
+    telemetry = battery.update(VehicleProfiles.LOW_BATTERY)
+
+    assert telemetry["state"] == "CHARGING"
+
+
+def test_overheating_profile():
+
+    battery = BatteryECU("EV-001")
+
+    telemetry = battery.update(VehicleProfiles.OVERHEATING)
+
+    assert telemetry["faultCode"] == "OVERHEAT"

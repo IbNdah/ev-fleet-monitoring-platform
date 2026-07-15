@@ -1,42 +1,48 @@
-from fleet_simulator.telemetry.telemetry_generator import TelemetryGenerator
-from fleet_simulator.vehicles.vehicle import Vehicle
+"""
+EV Fleet Monitoring Platform
+
+Fleet Manager
+
+Coordinates the complete fleet simulation.
+
+Responsibilities
+----------------
+- Maintain the vehicle fleet.
+- Ask the FleetScenarioEngine to assign profiles.
+- Execute one simulation cycle.
+- Return telemetry for the complete fleet.
+"""
+
+from fleet_simulator.scenarios.fleet_scenario_engine import (
+    FleetScenarioEngine,
+)
 
 
 class FleetSimulator:
-    """Manages a fleet of simulated EVs."""
+    """Coordinates the complete fleet simulation."""
 
     def __init__(self):
 
-        # List of vehicles in the fleet
         self.vehicles = []
 
     def add_vehicle(self, vehicle):
-        """Add a vehicle to the fleet."""
+        """
+        Register a vehicle in the fleet.
+        """
 
         self.vehicles.append(vehicle)
 
     def simulate_cycle(self):
-        """Run one simulation cycle for all vehicles."""
+        """
+        Execute one simulation cycle for the complete fleet.
+        """
 
-        telemetry_data = []
+        FleetScenarioEngine.assign_profiles(self.vehicles)
+
+        telemetry_batch = []
 
         for vehicle in self.vehicles:
-            TelemetryGenerator.apply_scenario(vehicle)
 
-            telemetry_data.append(vehicle.simulate_cycle())
+            telemetry_batch.append(vehicle.simulate_cycle())
 
-        return telemetry_data
-
-
-# Quick test
-if __name__ == "__main__":
-
-    fleet = FleetSimulator()
-
-    fleet.add_vehicle(Vehicle("EV-001"))
-
-    fleet.add_vehicle(Vehicle("EV-002"))
-
-    telemetry = fleet.simulate_cycle()
-
-    print(telemetry)
+        return telemetry_batch

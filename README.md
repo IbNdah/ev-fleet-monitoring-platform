@@ -8,61 +8,89 @@
 ![Azure Functions](https://img.shields.io/badge/Azure-Functions-0062AD)
 ![Azure IoT Hub](https://img.shields.io/badge/Azure-IoT_Hub-0078D4)
 ![Cosmos DB](https://img.shields.io/badge/CosmosDB-NoSQL-2E8B57)
+![Grafana](https://img.shields.io/badge/Grafana-Observability-F46800?logo=grafana&logoColor=white)
 ![MIT License](https://img.shields.io/badge/License-MIT-success)
 
 </p>
 
 ---
 
-# Enterprise Azure IoT Monitoring Platform
+> **A cloud-native Azure IoT platform that collects, validates, processes, and visualizes electric vehicle telemetry in near real time using an event-driven serverless architecture.**
 
-> An end-to-end Azure-native IoT platform demonstrating **Event-Driven Architecture**, **Serverless Computing**, **Infrastructure as Code**, **Cloud Security** and **Enterprise Observability**.
+Modern electric vehicle fleets continuously generate telemetry that must be securely collected, validated, processed, and monitored to ensure operational efficiency, vehicle health, and data-driven decision making.
+
+This project demonstrates how Microsoft Azure services can be combined to build a production-inspired IoT platform featuring **Edge Computing**, **Event-Driven Architecture**, **Serverless Computing**, **Infrastructure as Code**, **Managed Identity**, and **Enterprise Observability**.
 
 ---
 
-# 📷 Solution Overview
+# 📊 Platform Dashboard
 
 <p align="center">
 
-**Battery ECU → MQTT → Edge Gateway → Azure IoT Hub → Azure Functions → Cosmos DB → Azure Monitor → Workbooks**
+<img src="docs/screenshots/grafana-dashboard.png" width="100%">
 
 </p>
 
----
-
-# 🌍 Business Problem
-
-Modern electric vehicle fleets continuously generate telemetry that must be securely collected, validated, processed and visualized in near real time.
-
-This project demonstrates how Microsoft Azure services can be combined into a production-inspired cloud-native architecture.
+> **Real-time fleet monitoring with operational KPIs, battery health, telemetry trends, vehicle status, and platform health.**
 
 ---
 
-# 🚀 Solution Highlights
+# 🌍 Business Context
 
-- 🚗 Multi-Vehicle Fleet Simulator
-- 🌐 MQTT Edge Communication
-- ☁ Azure IoT Hub
-- ⚡ Azure Functions
-- 🌌 Azure Cosmos DB
-- 🔑 Azure Key Vault
-- 🔒 Managed Identity
-- 📊 Azure Monitor
-- 💡 Application Insights
-- 📈 Azure Workbooks
-- 🏗 Terraform Infrastructure as Code
-- 📋 OpenTelemetry
-- 📑 Structured Logging
+Modern electric vehicle (EV) fleets generate thousands of telemetry events every day. Battery state of charge, temperature, voltage, current, and vehicle status must be continuously monitored to ensure operational efficiency, driver safety, and predictive maintenance.
+
+Building a scalable telemetry platform requires much more than simply collecting data. Incoming events must be validated, securely ingested, processed in near real time, stored efficiently, and transformed into actionable operational insights.
+
+This project demonstrates how these challenges can be addressed using a cloud-native Azure architecture built around event-driven communication, serverless processing, secure identity management, and enterprise observability.
+
+### Business Goals
+
+- Collect telemetry from multiple simulated electric vehicles.
+- Validate telemetry at the Edge before cloud ingestion.
+- Process events using a scalable serverless architecture.
+- Persist telemetry efficiently in Azure Cosmos DB.
+- Expose fleet KPIs through a Dashboard API.
+- Monitor fleet health using Grafana and Azure Monitor.
 
 ---
 
-# 🏗 High-Level Architecture
+# 🚀 Solution Overview
+
+The platform simulates an electric vehicle fleet and reproduces a complete production-inspired telemetry pipeline, from data generation inside Battery ECUs to real-time operational dashboards.
+
+```text
+Battery ECU
+      │
+Vehicle Simulator
+      │
+MQTT Broker
+      │
+Edge Gateway
+      │
+Azure IoT Hub
+      │
+Azure Functions
+      │
+Azure Cosmos DB
+      │
+Fleet Dashboard API
+      │
+Grafana Dashboard
+```
+
+Each component has a single responsibility, resulting in a modular, scalable, secure, and maintainable cloud architecture.
+
+---
+
+# 🏗 Solution Architecture
 
 <p align="center">
 
 <img src="docs/architecture/high-level-architecture.png" width="100%">
 
 </p>
+
+The platform follows an event-driven architecture where telemetry flows asynchronously through loosely coupled Azure services. This design improves scalability, resilience, and maintainability while enabling independent evolution of each component.
 
 ---
 
@@ -74,111 +102,16 @@ This project demonstrates how Microsoft Azure services can be combined into a pr
 
 </p>
 
----
+The telemetry pipeline follows these processing stages:
 
-# ☁ Azure Architecture
-
-| Azure Service | Purpose |
-|---------------|---------|
-| Azure IoT Hub | Secure telemetry ingestion |
-| Event Hub Compatible Endpoint | Event streaming |
-| Azure Functions | Event-driven processing |
-| Azure Cosmos DB | Telemetry persistence |
-| Azure Key Vault | Secret management |
-| Managed Identity | Passwordless authentication |
-| Application Insights | Distributed tracing |
-| Azure Monitor | Cloud monitoring |
-| Azure Workbooks | Fleet dashboards |
-
----
-
-# ⭐ Enterprise Capabilities
-
-| Capability | Status |
-|------------|:------:|
-| Fleet Simulation | ✅ |
-| MQTT Communication | ✅ |
-| Edge Gateway | ✅ |
-| Azure IoT Hub | ✅ |
-| Azure Functions | ✅ |
-| Cosmos DB | ✅ |
-| Managed Identity | ✅ |
-| Azure Key Vault | ✅ |
-| Application Insights | ✅ |
-| Azure Monitor | ✅ |
-| Azure Workbook | ✅ |
-| Terraform | ✅ |
-| GitHub Actions | 🚧 |
-| Grafana | 🚧 |
-| Alerting | 🚧 |
-
----
-
-# 📊 Observability
-
-The platform has been designed with **observability by default**.
-
-✔ Structured Logging
-
-✔ Correlation IDs
-
-✔ OpenTelemetry
-
-✔ Azure Monitor
-
-✔ Application Insights
-
-✔ Azure Workbook
-
-✔ KQL Analytics
-
----
-
-<p align="center">
-
-<img src="docs/screenshots/workbook.png" width="95%">
-
-</p>
-
----
-
-# ⚡ Performance
-
-Measured during production testing.
-
-| Metric | Typical Value |
-|---------|--------------:|
-| Azure Function Execution | **8–16 ms** |
-| Cosmos DB Write | **8–12 ms** |
-| End-to-End Processing | **<20 ms** |
-| Cosmos Response | **HTTP 201** |
-
----
-
-# 📂 Repository Structure
-
-```text
-ev-fleet-monitoring-platform
-
-├── cloud
-│   ├── functions_app
-│   ├── services
-│   └── iot_hub_connector.py
-│
-├── fleet_simulator
-│
-├── edge_gateway
-│
-├── infrastructure
-│   ├── environments
-│   └── modules
-│
-├── shared
-│
-├── docs
-│
-└── tests
-```
+1. Battery ECUs generate vehicle telemetry.
+2. The Fleet Simulator publishes MQTT messages.
+3. The Edge Gateway validates and enriches incoming telemetry.
+4. Azure IoT Hub securely ingests cloud-bound events.
+5. Azure Functions process telemetry using serverless event-driven execution.
+6. Processed telemetry is stored in Azure Cosmos DB.
+7. The Fleet Dashboard API exposes aggregated fleet metrics.
+8. Grafana visualizes operational KPIs and fleet health in near real time.
 
 ---
 
@@ -186,164 +119,153 @@ ev-fleet-monitoring-platform
 
 | Category | Technologies |
 |-----------|--------------|
-| Language | Python 3.11 |
-| Cloud | Microsoft Azure |
-| IoT | MQTT |
-| Messaging | Azure IoT Hub |
-| Serverless | Azure Functions |
-| Database | Cosmos DB |
-| Security | Key Vault + Managed Identity |
+| Programming Language | Python 3.11 |
+| Cloud Platform | Microsoft Azure |
+| Messaging | MQTT |
+| IoT Platform | Azure IoT Hub |
+| Compute | Azure Functions |
+| Database | Azure Cosmos DB |
+| Security | Azure Key Vault • Managed Identity |
 | Monitoring | Azure Monitor |
-| Observability | Application Insights + OpenTelemetry |
-| Dashboards | Azure Workbooks |
+| Observability | Application Insights • OpenTelemetry |
+| Visualization | Grafana • Azure Workbooks |
 | Infrastructure | Terraform |
-| Version Control | Git & GitHub |
-
---- 
-
-# 🚀 Quick Start
-
-Clone
-
-```bash
-git clone https://github.com/<your-account>/ev-fleet-monitoring-platform.git
-```
-
-Install
-
-```bash
-python -m venv .venv
-
-pip install -r requirements.txt
-```
-
-Run Fleet Simulator
-
-```bash
-python fleet_simulator/main.py
-```
-
-Run Azure Functions
-
-```bash
-func start
-```
-
-Deploy
-
-```bash
-func azure functionapp publish evfleet-function-dev
-```
+| Version Control | Git • GitHub |
 
 ---
 
-# 📷 Gallery
+# ⭐ Key Features
 
-## Azure Workbook
+- 🚗 Multi-vehicle EV Fleet Simulation
+- 🌐 MQTT-based Edge Communication
+- ☁️ Azure-native Event-Driven Architecture
+- ⚡ Serverless Telemetry Processing
+- 🗄️ Azure Cosmos DB Persistence
+- 🔐 Passwordless Authentication with Managed Identity
+- 🔑 Azure Key Vault Integration
+- 🏗️ Infrastructure as Code using Terraform
+- 📈 Real-Time Fleet Dashboard
+- 🔍 OpenTelemetry Distributed Tracing
+- 📋 Structured Logging
+- 📊 Enterprise Observability with Grafana and Azure Monitor
+
+---
+# 📷 Platform Gallery
+
+The following screenshots illustrate the different operational layers of the platform, from fleet monitoring to telemetry persistence and cloud observability.
+
+---
+
+## 📊 Grafana Dashboard
+
+Real-time operational dashboard displaying fleet KPIs, battery health, vehicle status, and telemetry trends.
 
 <p align="center">
 
-<img src="docs/screenshots/workbook.png" width="95%">
+<img src="docs/screenshots/grafana-dashboard.png" width="100%">
 
 </p>
 
 ---
 
-## Application Insights
+## 📈 Azure Workbook
+
+Azure Workbook provides cloud-native operational analytics by combining KQL queries with interactive visualizations for fleet telemetry.
 
 <p align="center">
 
-<img src="docs/screenshots/applications-insights.png" width="95%">
+<img src="docs/screenshots/workbook.png" width="100%">
 
 </p>
 
 ---
 
-## Azure Cosmos DB
+## 🔍 Application Insights
+
+Application Insights captures telemetry, execution traces, and performance metrics, enabling end-to-end observability and troubleshooting.
 
 <p align="center">
 
-<img src="docs/screenshots/cosmos-db.png" width="95%">
+<img src="docs/screenshots/application-insights.png" width="100%">
 
 </p>
 
 ---
 
-## Azure Portal
+## 🗄 Azure Cosmos DB
+
+Processed telemetry is persisted in Azure Cosmos DB, providing scalable NoSQL storage for historical fleet data and dashboard queries.
 
 <p align="center">
 
-<img src="docs/screenshots/resource-group.png" width="95%">
+<img src="docs/screenshots/cosmos-db.png" width="100%">
 
 </p>
 
 ---
 
-# 🗺 Roadmap
+## ☁ Azure Portal
 
-## Completed
+The complete Azure infrastructure is deployed and managed using Terraform, providing a production-inspired cloud environment.
 
-- ✅ Fleet Simulator
-- ✅ Edge Gateway
-- ✅ Azure IoT Hub
-- ✅ Azure Functions
-- ✅ Cosmos DB
-- ✅ Azure Key Vault
-- ✅ Managed Identity
-- ✅ Azure Monitor
-- ✅ Azure Workbook
-- ✅ OpenTelemetry
-- ✅ Terraform
+<p align="center">
+
+<img src="docs/screenshots/resource-group.png" width="100%">
+
+</p>
 
 ---
+# 📈 Observability
 
-## Planned
+The platform has been designed with observability as a first-class architectural principle.
 
-- ⬜ GitHub Actions CI/CD
-- ⬜ Grafana Dashboard
-- ⬜ Email Alerting
-- ⬜ Microsoft Teams Notifications
-- ⬜ Docker
-- ⬜ Kubernetes
-- ⬜ Predictive Analytics
+Telemetry is collected across the entire processing pipeline, allowing application behavior, performance, and operational health to be monitored in near real time.
+
+### Observability Capabilities
+
+- 📊 Grafana dashboards for operational monitoring
+- 📈 Azure Workbooks for cloud-native analytics
+- 🔍 Application Insights distributed tracing
+- 📋 Structured application logging
+- 🔗 Correlation IDs across the telemetry pipeline
+- ⚙ OpenTelemetry instrumentation
+- 📉 Performance metrics and execution timing
+- ☁ Azure Monitor integration
 
 ---
-
 # 🎯 Skills Demonstrated
 
-| Cloud | Infrastructure | DevOps | Observability |
-|--------|---------------|---------|----------------|
-| Azure IoT Hub | Terraform | Git | Azure Monitor |
-| Azure Functions | IaC | GitHub | Application Insights |
-| Cosmos DB | Modular Design | CI/CD | Workbooks |
-| Key Vault | Automation | Testing | OpenTelemetry |
-| Managed Identity | Cloud Security | Deployment | KQL |
+This project demonstrates practical experience designing and implementing a production-inspired Azure IoT solution.
 
----
+### Cloud Architecture
 
-# 📚 Documentation
+- Azure IoT Hub
+- Azure Functions
+- Azure Cosmos DB
+- Azure Key Vault
+- Managed Identity
 
-Additional technical documentation is available in the **docs/** folder.
+### Software Engineering
 
-- Architecture
-- Deployment Guide
+- Python
+- Modular Architecture
+- Event-Driven Design
+- REST API Development
+- Structured Logging
+
+### Cloud Operations
+
+- Grafana
+- Azure Monitor
+- Application Insights
+- OpenTelemetry
+- KQL
+
+### Infrastructure & DevOps
+
 - Terraform
-- Monitoring
-- Troubleshooting
-- Architecture Decision Records (ADR)
+- Infrastructure as Code
+- Git & GitHub
+- Automated Testing
 
 ---
-
-# 👨‍💻 Author
-
-**Ibrahim Ndah**
-
-Cloud Engineer • Azure Solutions Architect • IoT Enthusiast
-
----
-
-<p align="center">
-
-⭐ If you like this project, consider giving it a Star!
-
-</p>

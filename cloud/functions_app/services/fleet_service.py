@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from collections import defaultdict
 from dataclasses import asdict, dataclass
 from datetime import datetime
@@ -14,8 +15,8 @@ logger = logging.getLogger("evfleet")
 # ------------------------------------------------------------------
 
 TREND_BUCKET_SECONDS = 5
-API_VERSION = "7.5.4"
-BUILD_VERSION = "2026.07.08"
+API_VERSION = "8.0"
+BUILD_VERSION = "2026.07.15"
 
 
 # ------------------------------------------------------------------
@@ -65,6 +66,7 @@ class DashboardStatus:
     """
 
     last_update: str
+    azure_region: str
     api_version: str
     build_version: str
     simulator_status: str
@@ -368,6 +370,10 @@ class FleetService:
         """
 
         fleet = self._get_latest_fleet()
+        region = os.getenv(
+            "AZURE_REGION",
+            "Germany West Central",
+        )
 
         if fleet:
             last_update = max(v["processedTimestamp"] for v in fleet)
@@ -380,6 +386,7 @@ class FleetService:
 
         status = DashboardStatus(
             last_update=last_update,
+            azure_region=region,
             api_version=API_VERSION,
             build_version=BUILD_VERSION,
             simulator_status=simulator_status,
