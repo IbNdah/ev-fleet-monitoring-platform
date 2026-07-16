@@ -32,7 +32,6 @@ class KeyVaultService:
             return KeyVaultService._cache[secret_name]
 
         value = KeyVaultService._client.get_secret(secret_name).value
-
         KeyVaultService._cache[secret_name] = value
 
         return value

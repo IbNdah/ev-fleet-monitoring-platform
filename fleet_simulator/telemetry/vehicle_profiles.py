@@ -1,31 +1,38 @@
-"""
-EV Fleet Monitoring Platform
-
-Vehicle Operating Profiles
-
-A VehicleProfile describes the operating condition assigned
-to a simulated vehicle.
-
-The FleetScenarioEngine decides which profile is active.
-
-BatteryECU interprets the selected profile and generates
-realistic battery telemetry.
-"""
+# region Imports
 
 from dataclasses import dataclass
 from typing import Optional
+
+# endregion
+
+
+# region Data Transfer Objects (DTO)
 
 
 @dataclass(frozen=True)
 class VehicleProfile:
     """
-    Immutable description of a vehicle operating profile.
+    Immutable operating profile assigned to a simulated vehicle.
+
+    Responsibilities
+    ----------------
+    - Describe the current operating mode.
+    - Define optional physical constraints.
+    - Inject optional fault conditions.
+
+    Notes
+    -----
+    VehicleProfile is a pure data object.
+
+    The FleetScenarioEngine selects the active profile.
+    The BatteryECU interprets the profile and generates
+    realistic battery telemetry.
     """
 
     name: str
     vehicle_state: str
 
-    # Optional constraints applied by BatteryECU
+    # Optional operating constraints
     max_soc: Optional[float] = None
     min_temperature: Optional[float] = None
 
@@ -33,14 +40,32 @@ class VehicleProfile:
     fault_code: Optional[str] = None
 
 
+# endregion
+
+
+# region Vehicle Profile Catalog
+
+
 class VehicleProfiles:
     """
-    Catalog of available operating profiles.
+    Catalog of predefined vehicle operating profiles.
+
+    These immutable profiles represent the business scenarios
+    available to the FleetScenarioEngine.
     """
+
+    # ---------------------------------------------------------
+    # Normal Operation
+    # ---------------------------------------------------------
 
     DRIVING = VehicleProfile(
         name="DRIVING",
         vehicle_state="DRIVING",
+    )
+
+    PARKED = VehicleProfile(
+        name="PARKED",
+        vehicle_state="PARKED",
     )
 
     CHARGING = VehicleProfile(
@@ -48,10 +73,9 @@ class VehicleProfiles:
         vehicle_state="CHARGING",
     )
 
-    PARKED = VehicleProfile(
-        name="PARKED",
-        vehicle_state="PARKED",
-    )
+    # ---------------------------------------------------------
+    # Special Operating Conditions
+    # ---------------------------------------------------------
 
     LOW_BATTERY = VehicleProfile(
         name="LOW_BATTERY",
@@ -65,3 +89,6 @@ class VehicleProfiles:
         min_temperature=70,
         fault_code="OVERHEAT",
     )
+
+
+# endregion

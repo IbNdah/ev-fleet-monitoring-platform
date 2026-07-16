@@ -20,10 +20,12 @@ def test_battery_limits():
 def test_low_battery_profile():
 
     battery = BatteryECU("EV-001")
+    battery.soc = 40
 
     telemetry = battery.update(VehicleProfiles.LOW_BATTERY)
 
-    assert telemetry["state"] == "CHARGING"
+    assert telemetry["state"] == "DRIVING"
+    assert telemetry["soc"] <= 15
 
 
 def test_overheating_profile():

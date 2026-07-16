@@ -50,11 +50,8 @@ class CosmosService:
         start = time.time()
 
         CosmosService._container.upsert_item(telemetry)
-
         cosmos_duration = round((time.time() - start) * 1000, 2)
-
         logging.info("========== COSMOS WRITE ==========")
-
         return cosmos_duration
 
     def get_fleet_summary(self):
@@ -83,8 +80,30 @@ class CosmosService:
                 enable_cross_partition_query=True,
             )
         )
-
         return items
+
+    def get_messages_processed(self) -> int:
+        """
+        Returns the total number of telemetry documents stored in Cosmos DB.
+        """
+        query = """
+        SELECT VALUE COUNT(c.id)
+        FROM c
+        """
+        try:
+            items = list(
+                CosmosService._container.query_items(
+                    query=query,
+                    enable_cross_partition_query=True,
+                )
+            )
+            return items[0] if items else 0
+        except Exception:
+
+            logger.exception(
+                "Failed to retrieve processed messages count from Cosmos DB"
+            )
+            raise
 
     def get_telemetry_history(self):
         """
@@ -117,7 +136,6 @@ class CosmosService:
                 enable_cross_partition_query=True,
             )
         )
-
         logger.info("Retrieved %s telemetry documents from Cosmos DB", len(items))
 
         return items

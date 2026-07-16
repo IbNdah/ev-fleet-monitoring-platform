@@ -1,20 +1,4 @@
-"""
-EV Fleet Monitoring Platform
-
-Fleet Scenario Engine
-
-Decision layer of the simulator.
-
-Responsibilities
-----------------
-- Assign operating profiles.
-- Keep profiles active for several cycles.
-- Inject rare fault scenarios.
-- Never generate telemetry.
-
-Telemetry generation remains the responsibility
-of the BatteryECU.
-"""
+# region Imports
 
 import random
 
@@ -22,11 +6,50 @@ from fleet_simulator.telemetry.vehicle_profiles import (
     VehicleProfiles,
 )
 
+# endregion
+
+
+# region Fleet Scenario Engine
+
 
 class FleetScenarioEngine:
-    """Assign operating profiles to the simulated fleet."""
+    """
+    EV Fleet Monitoring Platform
 
-    # Fleet distribution
+    Fleet Scenario Engine
+
+    Responsibilities
+    ----------------
+    Central decision layer of the simulator.
+
+    The FleetScenarioEngine decides which operating
+    profile is assigned to each simulated vehicle.
+
+    It never generates telemetry.
+
+    Telemetry generation remains exclusively the
+    responsibility of the BatteryECU.
+
+    Architecture
+    ------------
+    FleetScenarioEngine
+            │
+            ▼
+      VehicleProfile
+            │
+            ▼
+         BatteryECU
+            │
+            ▼
+      Telemetry Payload
+    """
+
+    # endregion
+
+    # region Fleet Configuration
+
+    # Weighted distribution of normal operating profiles
+
     NORMAL_PROFILES = [
         VehicleProfiles.DRIVING,
         VehicleProfiles.DRIVING,
@@ -41,6 +64,8 @@ class FleetScenarioEngine:
     ]
 
     # Number of simulation cycles
+    # each profile remains active
+
     PROFILE_DURATION = {
         "DRIVING": (5, 10),
         "PARKED": (2, 5),
@@ -48,18 +73,28 @@ class FleetScenarioEngine:
         "OVERHEATING": (1, 2),
     }
 
+    # Probability of injecting a fault
+
     FAULT_PROBABILITY = 0.03
+
+    # endregion
+
+    # region Scenario Assignment
 
     @classmethod
     def assign_profiles(cls, vehicles):
         """
         Assign operating profiles to every vehicle.
+
+        The same profile is kept for several
+        simulation cycles to avoid unrealistic
+        state oscillations.
         """
 
         for vehicle in vehicles:
 
             # -----------------------------------------
-            # Keep current profile
+            # Keep current operating profile
             # -----------------------------------------
 
             if vehicle.profile_cycles_remaining > 0:
@@ -68,7 +103,7 @@ class FleetScenarioEngine:
                 continue
 
             # -----------------------------------------
-            # Low battery always charges
+            # Low battery
             # -----------------------------------------
 
             if vehicle.battery_ecu.soc <= 15:
@@ -76,7 +111,7 @@ class FleetScenarioEngine:
                 profile = VehicleProfiles.CHARGING
 
             # -----------------------------------------
-            # Rare overheating
+            # Rare overheating event
             # -----------------------------------------
 
             elif random.random() < cls.FAULT_PROBABILITY:
@@ -84,12 +119,14 @@ class FleetScenarioEngine:
                 profile = VehicleProfiles.OVERHEATING
 
             # -----------------------------------------
-            # Normal operation
+            # Normal fleet operation
             # -----------------------------------------
 
             else:
 
-                profile = random.choice(cls.NORMAL_PROFILES)
+                profile = random.choice(
+                    cls.NORMAL_PROFILES,
+                )
 
             duration = random.randint(*cls.PROFILE_DURATION[profile.name])
 
@@ -97,3 +134,5 @@ class FleetScenarioEngine:
                 profile,
                 duration,
             )
+
+    # endregion

@@ -15,23 +15,24 @@ logger = logging.getLogger("evfleet")
 # ------------------------------------------------------------------
 
 TREND_BUCKET_SECONDS = 5
-API_VERSION = "8.0"
-BUILD_VERSION = "2026.07.15"
+API_VERSION = "7.6.1"
+BUILD_VERSION = "2026.07.16"
 
 
 # ------------------------------------------------------------------
 # DTOs
 # ------------------------------------------------------------------
-
-
 @dataclass
 class FleetSummary:
     fleet_health: float
     vehicles_online: int
+    messages_processed: int
+
     driving: int
     charging: int
     parked: int
     fault: int
+
     average_soc: float
     average_temperature: float
     average_voltage: float
@@ -76,8 +77,6 @@ class DashboardStatus:
 # ------------------------------------------------------------------
 # Fleet Service
 # ------------------------------------------------------------------
-
-
 class FleetService:
 
     def __init__(self):
@@ -152,11 +151,8 @@ class FleetService:
         total = len(fleet)
 
         driving = sum(1 for vehicle in fleet if vehicle["vehicleState"] == "DRIVING")
-
         charging = sum(1 for vehicle in fleet if vehicle["batteryState"] == "CHARGING")
-
         parked = sum(1 for vehicle in fleet if vehicle["vehicleState"] == "PARKED")
-
         fault = sum(1 for vehicle in fleet if vehicle["faultCode"] is not None)
 
         average_soc = round(
@@ -192,10 +188,9 @@ class FleetService:
         )
 
     # ------------------------------------------------------------------
-    # Fleet Summary
+    # Dashboard Summary
     # ------------------------------------------------------------------
-
-    def get_summary(self):
+    def get_dashboard_summary(self):
 
         fleet = self._get_latest_fleet()
 
@@ -207,9 +202,7 @@ class FleetService:
         # ------------------------------------------------------------------
         # Fleet Health Score
         # ------------------------------------------------------------------
-
         health = 100.0
-
         health -= stats.fault * 20
 
         if stats.average_temperature > 60:
@@ -220,9 +213,12 @@ class FleetService:
 
         health = max(0, round(health, 1))
 
+        messages_processed = self.cosmos.get_messages_processed()
+
         summary = FleetSummary(
             fleet_health=health,
             vehicles_online=stats.vehicles_online,
+            messages_processed=messages_processed,
             driving=stats.driving,
             charging=stats.charging,
             parked=stats.parked,
@@ -236,24 +232,9 @@ class FleetService:
         return asdict(summary)
 
     # ------------------------------------------------------------------
-    # Dashboard Overview
-    # ------------------------------------------------------------------
-
-    def get_overview(self):
-        """
-        Return the fleet overview for dashboard consumers.
-
-        Returns:
-            dict: Fleet overview.
-        """
-
-        return self.get_summary()
-
-    # ------------------------------------------------------------------
     # Dashboard Vehicles
     # ------------------------------------------------------------------
-
-    def get_vehicles(self):
+    def get_dashboard_vehicles(self):
         """
         Return dashboard-friendly vehicle information.
         """
@@ -275,7 +256,7 @@ class FleetService:
     # Dashboard Trends
     # ------------------------------------------------------------------
 
-    def get_trends(self):
+    def get_dashboard_trends(self):
         """
         Calculate fleet trends using configurable time buckets.
 
@@ -290,7 +271,6 @@ class FleetService:
         # --------------------------------------------------------------
         # Retrieve telemetry history
         # --------------------------------------------------------------
-
         telemetry = self.cosmos.get_telemetry_history()
 
         if not telemetry:
@@ -327,7 +307,6 @@ class FleetService:
         # --------------------------------------------------------------
 
         trends = []
-
         for bucket in sorted(buckets.keys()):
 
             soc = buckets[bucket]["soc"]
@@ -358,7 +337,6 @@ class FleetService:
     # ------------------------------------------------------------------
     # Dashboard Status
     # ------------------------------------------------------------------
-
     def get_dashboard_status(self):
         """
         Return platform status consumed by Grafana.

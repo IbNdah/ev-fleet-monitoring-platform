@@ -1,3 +1,5 @@
+# region Imports
+
 import json
 import logging
 
@@ -14,66 +16,152 @@ from shared.config import (
     REJECTED_TOPIC,
 )
 
-logging.basicConfig(level=LOG_LEVEL, format="%(asctime)s [%(levelname)s] %(message)s")
+# endregion
 
 
+# region Logging
+logging.basicConfig(
+    level=LOG_LEVEL,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
+
+# endregion
+
+
+# region Edge Gateway
 class EdgeGateway:
     """
-    Edge Gateway responsible for:
+    EV Fleet Monitoring Platform
 
-    - Receiving raw telemetry
-    - Validating payloads
-    - Translating payloads
-    - Republishing processed telemetry
-    - Forwarding telemetry to Azure IoT Hub
+    Edge Gateway
+
+    Responsibilities
+    ----------------
+    Process incoming telemetry before forwarding it
+    to Azure IoT Hub.
+
+    Processing Pipeline
+    -------------------
+    1. Receive MQTT telemetry
+    2. Validate payload
+    3. Translate payload
+    4. Publish processed telemetry
+    5. Forward telemetry to Azure IoT Hub
+
+    Architecture
+    ------------
+    MQTT Broker
+            │
+            ▼
+       Edge Gateway
+            │
+      Validation
+            │
+      Translation
+            │
+      MQTT Processed Topic
+            │
+            ▼
+       Azure IoT Hub
     """
 
+    # endregion
+
+    # region Constructor
+
     def __init__(self):
+        """
+        Initialize all gateway components.
+        """
 
         self.publisher = MQTTPublisher()
         self.publisher.connect()
 
-        self.iot_hub = IoTHubConnector(IOT_HUB_CONNECTION_STRING)
+        self.iot_hub = IoTHubConnector(
+            IOT_HUB_CONNECTION_STRING,
+        )
         self.iot_hub.connect()
 
-        self.subscriber = MQTTSubscriber(self.process_message)
+        self.subscriber = MQTTSubscriber(
+            self.process_message,
+        )
 
+    # endregion
+
+    # region Processing Pipeline
     def process_message(self, payload):
         """
-        Process raw telemetry through
-        validation and translation pipeline.
+        Process one incoming telemetry message.
+
+        Workflow
+        --------
+        1. Validate payload.
+        2. Translate payload.
+        3. Publish processed telemetry.
+        4. Forward telemetry to Azure IoT Hub.
         """
 
         logging.info("Received raw telemetry")
+
+        # -----------------------------------------
+        # Validation
+        # -----------------------------------------
 
         if not TelemetryValidator.validate(payload):
 
             logging.warning("Invalid telemetry received")
 
-            self.publisher.publish(REJECTED_TOPIC, payload)
+            self.publisher.publish(
+                REJECTED_TOPIC,
+                payload,
+            )
 
             return
 
-        translated = TelemetryTranslator.translate(payload)
+        # -----------------------------------------
+        # Translation
+        # -----------------------------------------
 
-        self.publisher.publish(PROCESSED_TOPIC, translated)
+        translated = TelemetryTranslator.translate(
+            payload,
+        )
+
+        # -----------------------------------------
+        # Publish processed telemetry
+        # -----------------------------------------
+
+        self.publisher.publish(
+            PROCESSED_TOPIC,
+            translated,
+        )
 
         logging.info("Published processed telemetry")
 
+        # -----------------------------------------
+        # Azure IoT Hub
+        # -----------------------------------------
+
         try:
+
             logging.info(f"Sending vehicle {translated['vehicleId']}")
 
-            self.iot_hub.send_telemetry(json.dumps(translated))
+            self.iot_hub.send_telemetry(
+                json.dumps(translated),
+            )
 
-            logging.info("Sent telemetry to Azure IoT Hub")
+            logging.info("Telemetry sent to Azure IoT Hub")
 
         except Exception as ex:
 
-            logging.error(f"IoT Hub send failed: {ex}")
+            logging.exception(f"Azure IoT Hub error: {ex}")
+
+    # endregion
+
+    # region Public API
 
     def start(self):
         """
-        Start Edge Gateway.
+        Start the Edge Gateway.
         """
 
         logging.info("Edge Gateway started")
@@ -82,10 +170,20 @@ class EdgeGateway:
 
         logging.info(f"Publishing to: {PROCESSED_TOPIC}")
 
-        self.subscriber.start(RAW_TOPIC)
+        self.subscriber.start(
+            RAW_TOPIC,
+        )
+
+    # endregion
 
 
+# endregion
+
+
+# region Entry Point
 if __name__ == "__main__":
 
     gateway = EdgeGateway()
     gateway.start()
+
+# endregion

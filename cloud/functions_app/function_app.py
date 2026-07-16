@@ -70,8 +70,6 @@ def error_response(ex: Exception, status_code: int = 500) -> func.HttpResponse:
 # -----------------------------------------------------------------------------
 # Event Hub Trigger
 # -----------------------------------------------------------------------------
-
-
 @app.event_hub_message_trigger(
     arg_name="event",
     event_hub_name="messages/events",
@@ -79,7 +77,7 @@ def error_response(ex: Exception, status_code: int = 500) -> func.HttpResponse:
 )
 def process_telemetry(event: func.EventHubEvent):
 
-    logger.info("########_ VERSION 8.0 _########")
+    logger.info("########_ VERSION 7.6.1 _########")
 
     correlation_id = str(uuid.uuid4())
     function_start = time.perf_counter()
@@ -170,25 +168,25 @@ def process_telemetry(event: func.EventHubEvent):
 
 
 # -----------------------------------------------------------------------------
-# Fleet Summary API
+# Dashboard Summary API
 # -----------------------------------------------------------------------------
 @app.route(
-    route="fleet/summary",
+    route="dashboard/summary",
     methods=["GET"],
     auth_level=func.AuthLevel.ANONYMOUS,
 )
-def fleet_summary(req: func.HttpRequest) -> func.HttpResponse:
+def dashboard_summary(req: func.HttpRequest) -> func.HttpResponse:
 
-    logger.info("Fleet Summary API called")
+    logger.info("Dashboard Summary API called")
 
     try:
         fleet = FleetService()
-        data = fleet.get_summary()
+        data = fleet.get_dashboard_summary()
 
         return json_response([data])
 
     except Exception as ex:
-        logger.exception("Fleet Summary API failed")
+        logger.exception("Dashboard Summary API failed")
 
         return error_response(ex)
 
@@ -207,7 +205,7 @@ def dashboard_vehicles(req: func.HttpRequest) -> func.HttpResponse:
 
     try:
         fleet = FleetService()
-        data = fleet.get_vehicles()
+        data = fleet.get_dashboard_vehicles()
 
         return json_response(data)
 
@@ -231,7 +229,7 @@ def dashboard_trends(req: func.HttpRequest) -> func.HttpResponse:
 
     try:
         fleet = FleetService()
-        data = fleet.get_trends()
+        data = fleet.get_dashboard_trends()
 
         return json_response(data)
 

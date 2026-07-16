@@ -174,7 +174,7 @@ Write-Host "--------------------------------------------------" -ForegroundColor
 Write-Host "REST APIs Endpoints"
 Write-Host "--------------------------------------------------" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "  Fleet Summary API    : api/fleet/summary"
+Write-Host "  Fleet Summary API    : api/dashboard/summary"
 Write-Host "  Dashboard Vehicles   : api/dashboard/vehicles"
 Write-Host "  Dashboard Trends     : api/dashboard/trends"
 Write-Host ""
