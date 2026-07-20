@@ -90,8 +90,6 @@ The architecture has been designed to maximize scalability, maintainability, sec
 
 <p align="center">
 
-## 📐 Executive Architecture Diagram
-
 <img src="docs/diagrams/executive_architecture.png" width="100%">
 
 </p>
@@ -112,8 +110,6 @@ The platform has been designed around modern cloud architecture principles commo
 | 📈 Scalability | Independent services can scale horizontally without impacting the overall architecture. |
 
 <p align="center">
-
-## 📐 End-to-End Telemetry Flow
 
 <img src="docs/diagrams/high-level-azure-topology.png" width="100%">
 
@@ -197,7 +193,7 @@ The platform follows a modular architecture where each component has a single re
 
 ## 📐 Software Component Architecture
 
-> <img src="docs/diagrams/software_components.png" width="100%">
+<img src="docs/screenshots/software_components.png" width="100%">
 
 </p>
 
