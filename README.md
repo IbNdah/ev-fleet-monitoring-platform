@@ -27,7 +27,7 @@ Designed around modern cloud architecture principles, the solution showcases an 
 
 ## 📸 Platform Dashboard
 
-<img src="docs/screenshots/Grafana_Dashboard.png" width="100%">
+<img src="docs/screenshots/grafana_dashboard.png" width="100%">
 
 </p>
 
@@ -389,14 +389,14 @@ Cloud Engineer | Azure Solutions Architect | IoT & Cloud Enthusiast
 **Certifications**
 
 - Microsoft Certified: Azure Solutions Architect Expert (AZ-305)
+- Microsoft Certified: Azure Administrator Associate (AZ-104)
 - Microsoft Certified: Azure Fundamentals (AZ-900)
 
 ---
 
 ## Connect with me
 
-- 💼 LinkedIn: *(Add your LinkedIn profile)*
-- 💻 GitHub: *(Add your GitHub profile)*
+- 💼 LinkedIn: *www.linkedin.com/in/ibrahim-ndah*
 
 ---
 
