@@ -10,6 +10,7 @@
 ![Cosmos DB](https://img.shields.io/badge/CosmosDB-NoSQL-0078D4)
 ![Grafana](https://img.shields.io/badge/Grafana-Visualization-F46800?logo=grafana&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-success)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
 
 </p>
 
