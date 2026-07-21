@@ -111,7 +111,7 @@ The platform has been designed around modern cloud architecture principles commo
 
 <p align="center">
 
-<img src="docs/diagrams/high-level-azure-topology.png" width="100%">
+<img src="docs/diagrams/01-executive-architecture.png" width="100%">
 
 </p>
 
@@ -125,7 +125,7 @@ Every telemetry message follows the same processing pipeline—from generation i
 
 ## 📐 End-to-End Telemetry Flow
 
-<img src="docs/diagrams/end-to-end-flow.png" width="100%">
+<img src="docs/diagrams/02-telemetry-flow.png" width="100%">
 
 </p>
 
@@ -193,7 +193,7 @@ The platform follows a modular architecture where each component has a single re
 
 ## 📐 Software Component Architecture
 
-<img src="docs/screenshots/software_components.png" width="100%">
+<img src="docs/diagrams/03-software-components.png" width="100%">
 
 </p>
 
@@ -247,7 +247,7 @@ The following diagram illustrates the Azure resources deployed by Terraform and 
 
 ## 📐 Azure Infrastructure Diagram
 
-<img src="docs/screenshots/azure_infrastructure.png" width="100%">
+<img src="docs/diagrams/04-azure-infrastructure.png" width="100%">
 </p>
 
 The infrastructure is organized around Azure-native managed services, minimizing operational overhead while maximizing scalability, resiliency, and security.
@@ -349,6 +349,10 @@ EV-Fleet-Monitoring-Platform
 │   ├── fleet_scenario_engine.py
 │   ├── fleet_simulator.py
 │   └── vehicle_profiles.py
+│
+├── grafana/
+│   ├── dashboard.json
+│   └── README.md
 │
 ├── infrastructure/
 │   ├── modules/

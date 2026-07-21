@@ -15,8 +15,8 @@ logger = logging.getLogger("evfleet")
 # ------------------------------------------------------------------
 
 TREND_BUCKET_SECONDS = 5
-API_VERSION = "7.6.1"
-BUILD_VERSION = "2026.07.16"
+API_VERSION = "1.0.0"
+BUILD_VERSION = "2026.07.20"
 
 
 # ------------------------------------------------------------------
