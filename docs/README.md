@@ -1,120 +1,70 @@
-> **Back to the main project:** [README.md](../README.md)
+# Documentation
 
-# 📚 Documentation
+This directory contains the supporting documentation for the **EV Fleet
+Monitoring Platform**.
 
-Welcome to the documentation of the **EV Fleet Monitoring Platform**.
+It provides the architecture guide, dashboard API reference,
+architecture diagrams, and screenshots of the deployed platform.
 
-This section complements the main project README by providing additional architectural references, API documentation, and supporting assets used throughout the project.
+## Documentation Structure
 
----
-
-# Documentation Structure
-
-```
+``` text
 docs/
-│
 ├── architecture/
 │   └── README.md
-│
 ├── api/
 │   └── dashboard-api.md
-│
 ├── diagrams/
-│
+│   ├── 01-executive-architecture.png
+│   ├── 02-telemetry-flow.png
+│   ├── 03-software-components.png
+│   └── 04-azure-infrastructure.png
 └── screenshots/
 ```
 
----
+## Architecture Guide
 
-# 🏗️ Architecture
+The [Architecture Guide](architecture/README.md) describes the
+platform’s logical layers, key design decisions, and technology choices.
 
-The architecture documentation explains how the platform is designed and why key architectural decisions were made.
+## Dashboard API
 
-It includes:
+The [Dashboard API documentation](api/dashboard-api.md) describes the
+REST endpoints used to provide fleet information to Azure Managed
+Grafana.
 
-- Architecture Overview
-- Layered Architecture
-- Technology Stack
-- Key Architectural Decisions
-- Related Architecture Diagrams
+The dashboard endpoints cover:
 
-📂 Location
+- Fleet summary
+- Fleet status
+- Vehicle information
+- Telemetry trends
 
-```
-docs/architecture/
-```
+## Architecture Diagrams
 
----
+The diagrams present the solution from four complementary perspectives.
 
-# 🌐 API Documentation
+| Diagram                         | Description                                                 |
+|---------------------------------|-------------------------------------------------------------|
+| `01-executive-architecture.png` | High-level view of the complete platform.                   |
+| `02-telemetry-flow.png`         | Telemetry path from the vehicle simulator to the dashboard. |
+| `03-software-components.png`    | Main software components and their responsibilities.        |
+| `04-azure-infrastructure.png`   | Azure resources and infrastructure relationships.           |
 
-The Dashboard API exposes REST endpoints consumed by Azure Managed Grafana.
+All diagrams are stored in `docs/diagrams/`.
 
-Available documentation includes:
+## Screenshots
 
-- Dashboard Summary
-- Dashboard Status
-- Dashboard Trends
-- Dashboard Vehicles
+The screenshots provide visual evidence of the deployed platform and its
+operational components, including Grafana, Azure resources, Application
+Insights, and Cosmos DB.
 
-📂 Location
+They are stored in `docs/screenshots/`.
 
-```
-docs/api/
-```
+## Documentation Scope
 
----
+The documentation focuses on the implemented architecture, the telemetry
+processing path, the interaction between platform components, and the
+dashboard interface.
 
-# 📐 Architecture Diagrams
-
-The project contains several diagrams illustrating the platform from different perspectives.
-
-| Diagram | Description |
-|----------|-------------|
-| Executive Architecture | High-level view of the platform |
-| End-to-End Telemetry Flow | Telemetry lifecycle from simulator to dashboard |
-| Software Component Architecture | Internal application organization |
-| Azure Infrastructure | Azure resources deployed with Terraform |
-| Azure Solution Topology | Connectivity between Azure services |
-
-📂 Location
-
-```
-docs/diagrams/
-```
-
----
-
-# 📷 Screenshots
-
-Screenshots illustrate the operational platform and Azure resources.
-
-Included images:
-
-- Grafana Dashboard
-- Azure Portal
-- Application Insights
-- Cosmos DB Explorer
-- Azure Infrastructure
-
-📂 Location
-
-```
-docs/screenshots/
-```
-
----
-
-# 🎯 Documentation Philosophy
-
-The documentation is intentionally concise and focuses on the architectural concepts required to understand the platform.
-
-It is designed to help readers quickly understand:
-
-- the overall architecture;
-- the telemetry processing flow;
-- the interaction between Azure services;
-- the dashboard APIs;
-- the technologies used throughout the project.
-
-For a complete overview of the project, please refer to the main **README.md**.
+For the project overview, start with the [main README](../README.md).
